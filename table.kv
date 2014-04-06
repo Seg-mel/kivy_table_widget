@@ -1,0 +1,58 @@
+#:kivy 1.0
+
+<MyTable>:
+    orientation: 'vertical'
+
+    LabelPanel:
+
+    ScrollViewTable:
+        ScrollViewBoxLayout:
+            orientation: 'horizontal'
+
+            NumPanel:
+
+            GridTable:
+                size_hint: 1, None # Not scroll without it
+
+<ScrollViewTable>:
+    size_hint: 1, 1
+    size: self.size
+    #orientation: 'vertical'
+    #scroll_timeout: 10
+    #scroll_distance: 32
+
+<ScrollViewBoxLayout>:
+    cols: 2
+    size_hint: 1, None # Not scroll without it
+
+<LabelPanel>:
+    orientation: 'horizontal'
+    height: 30
+    size_hint: 1, None
+
+<NumPanel>:
+    orientation: 'vertical'
+    size_hint: None, 1
+    width: 30
+
+<NewLabel>:
+    text: 'Label'
+    size_hint: 1, 1
+
+<NewButton>:
+    size_hint: 1, None
+    font_size: 12
+    valign: 'middle'
+    height: 30
+    background_color: self.DEFAULT_CONFIG_COLOR
+    #text_size: (self.width-20, self.height)
+    #halign: 'left'
+
+<NewNullLabel>:
+    width: 30
+    size_hint: None, 1
+    #background_color: self.DEFAULT_CONFIG_COLOR
+
+<NewNumberLabel>:
+    size_hint: 1, 1
+
