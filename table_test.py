@@ -4,6 +4,9 @@
 import kivy
 from kivy.config import Config
 Config.set("input", "mouse", "mouse, disable_multitouch")
+import logging
+from kivy.logger import Logger
+Logger.setLevel(logging.ERROR)
 import table
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
@@ -27,6 +30,7 @@ class MainScreen(BoxLayout):
         element = my_table.get_item(12,2)
         my_table.choose_row(1)
         print my_table.get_row_count()
+        my_table.del_line(5)
 
 
 

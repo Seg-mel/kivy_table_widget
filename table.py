@@ -36,11 +36,11 @@ class MyTable(BoxLayout):
 
     @property
     def cols(self):
+        """ Get/set number of columns """
         return self._cols
 
     @cols.setter
     def cols(self, number=0):
-        """ Set number of columns """
         self._cols = number
         self.grid.cols = number
         self.label_panel.add_widget(NewNullLabel())
@@ -60,6 +60,13 @@ class MyTable(BoxLayout):
         else:
             print 'ERROR: Please, add %s strings in method\'s arguments' %\
                                                               str(self._cols)
+
+    def del_line(self, number):
+        """ Delete a line by number """
+        for col in range(self._cols):
+            self.grid.remove_widget(self.get_item(number, 0))
+            print 'DELETED:', (number, col)
+        self.num_panel.remove_widget(self.num_panel.children[0])
 
     def get_item(self, row_num, col_num):
         """ 
@@ -135,11 +142,11 @@ class LabelPanel(BoxLayout):
 
     @property
     def visible(self):
+        """ Get/set panel visible """
         return self._visible
 
     @visible.setter
     def visible(self, visible=True):
-        """ Set panel visible """
         if visible:
             self._visible = visible
             self.height = self._height
@@ -149,11 +156,11 @@ class LabelPanel(BoxLayout):
 
     @property
     def height_widget(self):
+        """ Get/set panel height """
         return self.height
 
     @height_widget.setter
     def height_widget(self, height=30):
-        """ Set panel height """
         if self._visible == True:
             self._height = height
             self.height = height
@@ -265,6 +272,7 @@ class NewNullLabel(Button):
 
     def on_press_button(self, touch=None):
         """ On press method for current object """
+        # Disable click
         self.state = 'normal'
         print 'pressed on null label'
         
