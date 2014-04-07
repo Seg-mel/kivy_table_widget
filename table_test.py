@@ -17,7 +17,7 @@ class MainScreen(BoxLayout):
         super(MainScreen, self).__init__()
         my_table = MyTable()
         self.add_widget(my_table)
-        my_table.set_num_columns(4)
+        my_table.cols = 4
         for i in range(32):
             my_table.add_line('asd','qwe'+str(i),'zxc'+str(i),'123'+str(i))
         my_table.label_panel.visible = True

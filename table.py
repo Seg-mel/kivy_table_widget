@@ -25,9 +25,8 @@ class MyTable(BoxLayout):
 
     def __init__(self):
         super(MyTable, self).__init__()
-        self.columns = 0
+        self._cols = 0
         self.choosen_row = 0
-        # self.label_height = 30
         # Getting the LabelPanel object for working with it
         self.label_panel = self.children[1]
         # Getting the GridTable object for working with it
@@ -35,9 +34,14 @@ class MyTable(BoxLayout):
         # Getting the NumPanel object for working with it
         self.num_panel = self.children[0].children[0].children[1]
 
-    def set_num_columns(self, number=0):
+    @property
+    def cols(self):
+        return self._cols
+
+    @cols.setter
+    def cols(self, number=0):
         """ Set number of columns """
-        self.columns = number
+        self._cols = number
         self.grid.cols = number
         self.label_panel.add_widget(NewNullLabel())
         for num in range(number):
@@ -48,13 +52,14 @@ class MyTable(BoxLayout):
         Add new line to table.
         Example: add_line('123','asd','()_+')
          """
-        if len(args)==self.columns:
+        if len(args)==self._cols:
             for num, item in enumerate(args):
                 self.grid.add_widget(NewButton(text=item))
-            self.num_panel.add_widget(NewNumberLabel(text=str(self.get_row_count())))
+            self.num_panel.add_widget(NewNumberLabel(
+                                               text=str(self.get_row_count())))
         else:
             print 'ERROR: Please, add %s strings in method\'s arguments' %\
-                                                            str(self.columns)
+                                                              str(self._cols)
 
     def get_item(self, row_num, col_num):
         """ 
@@ -62,9 +67,9 @@ class MyTable(BoxLayout):
         row_num = 0..n, col_num = 0..n.
         Example: get_item(13,12)
         """
-        item_num = row_num*self.columns+col_num
+        item_num = row_num*self._cols+col_num
         grid_children = reversed(self.grid.children)
-        if (len(self.grid.children)>item_num) and (col_num<self.columns):
+        if (len(self.grid.children)>item_num) and (col_num<self._cols):
             for num, child in enumerate(grid_children):
                 if num == item_num:
                     return child
@@ -76,8 +81,8 @@ class MyTable(BoxLayout):
     def get_row_count(self):
     	""" Get row count in our table """
     	grid_item_count = len(self.grid.children)
-    	row_count = grid_item_count/self.columns
-    	remainder = grid_item_count%self.columns
+    	row_count = grid_item_count/self._cols
+    	remainder = grid_item_count%self._cols
     	if remainder>0:
     		row_count+=1
     	return row_count
@@ -87,10 +92,10 @@ class MyTable(BoxLayout):
         Choose a row in our table.
         Example: choose_row(1)
         """
-        for col_num in range(self.columns):
+        for col_num in range(self._cols):
             old_grid_element = self.get_item(self.choosen_row, col_num)
             old_grid_element.set_background_color(
-                                                 old_grid_element.DEFAULT_COLOR)
+                                                old_grid_element.DEFAULT_COLOR)
             self.get_item(row_num, col_num).set_background_color()
         self.choosen_row = row_num
 
@@ -192,7 +197,7 @@ class GridTable(GridLayout):
         """ Get select item index """
         for index, child in enumerate(reversed(self.children)):
             if item_object == child:
-                columns = self.parent.parent.parent.columns
+                columns = self.parent.parent.parent._cols
                 row_index = index/columns
                 print str(row_index), 'row is choosen'
                 return row_index
