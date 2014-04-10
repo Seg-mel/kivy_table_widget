@@ -1,43 +1,75 @@
 #:kivy 1.0
 
+# GUI Structure
 <MyTable>:
     orientation: 'vertical'
 
     LabelPanel:
 
+        NewNullLabel:
+
     ScrollViewTable:
+
         ScrollViewBoxLayout:
-            orientation: 'horizontal'
 
             NumPanel:
 
             GridTable:
-                size_hint: 1, None # Not scroll without it
 
-<ScrollViewTable>:
-    size_hint: 1, 1
-    size: self.size
-    #orientation: 'vertical'
-    #scroll_timeout: 10
-    #scroll_distance: 32
-
-<ScrollViewBoxLayout>:
-    cols: 2
-    size_hint: 1, None # Not scroll without it
-
+# Elements options
 <LabelPanel>:
     orientation: 'horizontal'
     height: 30
     size_hint: 1, None
+
+<ScrollViewTable>:
+    size_hint: 1, 1
+    size: self.size
+    # orientation: 'vertical'
+    # scroll_timeout: 10
+    # scroll_distance: 32
+    canvas.before:
+        Color:
+            rgba: .4, .4, .4, 4
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<ScrollViewBoxLayout>:
+    orientation: 'horizontal'
+    cols: 2
+    size_hint: 1, None # Not scroll without it
 
 <NumPanel>:
     orientation: 'vertical'
     size_hint: None, 1
     width: 30
 
+<GridTable>:
+    size_hint: 1, None # Not scroll without it
+    canvas.before:
+        Color:
+            rgba: .4, .4, .4, 4
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
 <NewLabel>:
     text: 'Label'
     size_hint: 1, 1
+
+<NewNullLabel>:
+    width: 30
+    size_hint: None, 1
+
+<NewNumberLabel>:
+    size_hint: 1, 1
+    font_size: 14
+    # font_name: 'Terminus'
+    valign: 'middle'
+    halign: 'center'
+    max_lines: 1
+    text_size: (self.width, self.height)
 
 <NewButton>:
     size_hint: 1, None
@@ -45,14 +77,5 @@
     valign: 'middle'
     height: 30
     background_color: self.DEFAULT_CONFIG_COLOR
-    #text_size: (self.width-20, self.height)
-    #halign: 'left'
-
-<NewNullLabel>:
-    width: 30
-    size_hint: None, 1
-    #background_color: self.DEFAULT_CONFIG_COLOR
-
-<NewNumberLabel>:
-    size_hint: 1, 1
-
+    # text_size: (self.width-20, self.height)
+    # halign: 'left'

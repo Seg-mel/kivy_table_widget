@@ -43,18 +43,30 @@ class MyTable(BoxLayout):
     def cols(self, number=0):
         self._cols = number
         self.grid.cols = number
-        self.label_panel.add_widget(NewNullLabel())
         for num in range(number):
             self.label_panel.add_widget(NewLabel())
 
     def add_line(self, *args):
         """ 
-        Add new line to table.
-        Example: add_line('123','asd','()_+')
-         """
+        Add new line to table with Button widgets.
+        Example: add_line('123', 'asd', '()_+')
+        """
         if len(args)==self._cols:
             for num, item in enumerate(args):
                 self.grid.add_widget(NewButton(text=item))
+            self.num_panel.add_widget(NewNumberLabel(
+                                               text=str(self.get_row_count())))
+        else:
+            print 'ERROR: Please, add %s strings in method\'s arguments' %\
+                                                              str(self._cols)
+    def add_custom_line(self, *args):
+        """ 
+        Add new line to table with custom widgets.
+        Example: add_line(Button(), Label())
+        """
+        if len(args)==self._cols:
+            for num, item in enumerate(args):
+                self.grid.add_widget(item)
             self.num_panel.add_widget(NewNumberLabel(
                                                text=str(self.get_row_count())))
         else:
@@ -114,19 +126,11 @@ class ScrollViewTable(ScrollView):
         super(ScrollViewTable, self).__init__(**kwargs)
         self.bind(pos=self.redraw_widget)
         self.bind(size=self.redraw_widget)
-        self.set_background_color(COLOR_BKGRND)
 
     def redraw_widget(self, *args):
         """ Method of redraw this widget """
         with self.canvas.before:
             Rectangle(pos=self.pos, size=self.size)
-
-    def set_background_color(self, hex_color='#ffffff'):
-        """ Setting scrollview color """
-        with self.canvas.before:
-            color = get_color_from_hex(hex_color)
-            Color(*color)
-            Rectangle(size=self.size, pos=self.pos)
 
 
 
@@ -183,6 +187,54 @@ class NumPanel(BoxLayout):
     """Num panel class"""
     def __init__(self, **kwargs):
         super(NumPanel, self).__init__(**kwargs)
+        self.bind(pos=self.redraw_widget)
+        self.bind(size=self.redraw_widget)
+        self._visible = True
+        self._width = 30
+
+    @property
+    def visible(self):
+        """ Get/set panel visible """
+        return self._visible
+
+    @visible.setter
+    def visible(self, visible=True):
+        # Get null label object
+        null_label = self.parent.parent.parent.label_panel.children[-1]
+        if visible:
+            self._visible = visible
+            self.width = self._width
+            null_label.width = self._width
+        else:
+            self._visible = visible
+            self.width = 0
+            null_label.width = 0
+
+    @property
+    def width_widget(self):
+        """ Get/set panel width """
+        return self.width
+
+    @width_widget.setter
+    def width_widget(self, width=30):
+        # Get null label object
+        null_label = self.parent.parent.parent.label_panel.children[-1]
+        if self._visible == True:
+            self._width = width
+            self.width = width
+            null_label.width = width
+
+    def redraw_widget(self, *args):
+        """ Method of redraw this widget """
+        with self.canvas.before:
+            Rectangle(pos=self.pos, size=self.size)
+
+    def set_background_color(self, hex_color='#ffffff'):
+        """ Setting scrollview color """
+        with self.canvas.before:
+            color = get_color_from_hex(hex_color)
+            Color(*color)
+            Rectangle(size=self.size, pos=self.pos)
 
 
 
@@ -198,6 +250,8 @@ class GridTable(GridLayout):
     """This is the table itself"""
     def __init__(self, **kwargs):
         super(GridTable, self).__init__(**kwargs)
+        self.bind(pos=self.redraw_widget)
+        self.bind(size=self.redraw_widget)
         self.bind(minimum_height=self.setter('height'))
 
     def get_row_index(self, item_object):
@@ -209,6 +263,11 @@ class GridTable(GridLayout):
                 print str(row_index), 'row is choosen'
                 return row_index
                 break
+
+    def redraw_widget(self, *args):
+        """ Method of redraw this widget """
+        with self.canvas.before:
+            Rectangle(pos=self.pos, size=self.size)
 
 
 
@@ -242,31 +301,29 @@ class NewLabel(Button):
     def __init__(self, **kwargs):
         super(NewLabel, self).__init__(**kwargs)
         self.bind(on_press = self.on_press_button)
-        
-
-    def set_background_color(self, hex_color='#005522'):
-        """ Set hex background color """
-        self.background_color = get_color_from_hex(hex_color)
 
     def on_press_button(self, touch=None):
         """ On press method for current object """
         self.state = 'normal'
         print 'pressed on label label'
 
+    def redraw_widget(self, *args):
+        """ Method of redraw this widget """
+        with self.canvas.before:
+            Rectangle(pos=self.pos, size=self.size)
+
 
 
 class NewNullLabel(Button):
     """Num Label object class"""
 
-    DEFAULT_COLOR = '#444444'
-    DEFAULT_CONFIG_COLOR = get_color_from_hex(DEFAULT_COLOR)
-
     def __init__(self, **kwargs):
         super(NewNullLabel, self).__init__(**kwargs)
+        self.bind(pos=self.redraw_widget)
+        self.bind(size=self.redraw_widget)
         self.bind(on_press = self.on_press_button)
         
-
-    def set_background_color(self, hex_color='#005522'):
+    def set_background_color(self, hex_color='#ffffff'):
         """ Set hex background color """
         self.background_color = get_color_from_hex(hex_color)
 
@@ -275,6 +332,11 @@ class NewNullLabel(Button):
         # Disable click
         self.state = 'normal'
         print 'pressed on null label'
+
+    def redraw_widget(self, *args):
+        """ Method of redraw this widget """
+        with self.canvas.before:
+            Rectangle(pos=self.pos, size=self.size)
         
         
 
