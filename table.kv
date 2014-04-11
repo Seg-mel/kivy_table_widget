@@ -1,12 +1,16 @@
 #:kivy 1.0
 
+#:import get_color_from_hex kivy.utils.get_color_from_hex
+
 # GUI Structure
-<MyTable>:
+<Table>:
     orientation: 'vertical'
 
     LabelPanel:
 
-        NewNullLabel:
+        NullLabel:
+
+        # Other objects are added dynamically
 
     ScrollViewTable:
 
@@ -16,11 +20,17 @@
 
             GridTable:
 
-# Elements options
+# Objects options
 <LabelPanel>:
     orientation: 'horizontal'
     height: 30
     size_hint: 1, None
+    canvas.before:
+        Color:
+            rgba: get_color_from_hex('#ffffff')
+        Rectangle:
+            pos: self.pos
+            size: self.size
 
 <ScrollViewTable>:
     size_hint: 1, 1
@@ -30,10 +40,11 @@
     # scroll_distance: 32
     canvas.before:
         Color:
-            rgba: .4, .4, .4, 4
+            rgba: get_color_from_hex('#444444')
         Rectangle:
             pos: self.pos
             size: self.size
+    
 
 <ScrollViewBoxLayout>:
     orientation: 'horizontal'
@@ -44,12 +55,18 @@
     orientation: 'vertical'
     size_hint: None, 1
     width: 30
+    canvas.before:
+        Color:
+            rgba: get_color_from_hex('#ffffff')
+        Rectangle:
+            pos: self.pos
+            size: self.size
 
 <GridTable>:
     size_hint: 1, None # Not scroll without it
     canvas.before:
         Color:
-            rgba: .4, .4, .4, 4
+            rgba: get_color_from_hex('#444444')
         Rectangle:
             pos: self.pos
             size: self.size
@@ -57,8 +74,12 @@
 <NewLabel>:
     text: 'Label'
     size_hint: 1, 1
+    valign: 'middle'
+    halign: 'center'
+    max_lines: 1
+    text_size: (self.width, self.height)
 
-<NewNullLabel>:
+<NullLabel>:
     width: 30
     size_hint: None, 1
 
@@ -75,7 +96,6 @@
     size_hint: 1, None
     font_size: 12
     valign: 'middle'
-    height: 30
     background_color: self.DEFAULT_CONFIG_COLOR
     # text_size: (self.width-20, self.height)
     # halign: 'left'

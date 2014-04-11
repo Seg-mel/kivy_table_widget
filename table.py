@@ -20,19 +20,36 @@ COLOR_BKGRND = '#aaaaaa'
 
 
 
-class MyTable(BoxLayout):
+class Table(BoxLayout):
     """My table widget"""
 
     def __init__(self):
-        super(MyTable, self).__init__()
+        super(Table, self).__init__()
         self._cols = 0
-        self.choosen_row = 0
+        self._choosen_row = 0
         # Getting the LabelPanel object for working with it
-        self.label_panel = self.children[1]
+        self._label_panel = self.children[1]
         # Getting the GridTable object for working with it
-        self.grid = self.children[0].children[0].children[0]
+        self._grid = self.children[0].children[0].children[0]
         # Getting the NumPanel object for working with it
-        self.num_panel = self.children[0].children[0].children[1]
+        self._num_panel = self.children[0].children[0].children[1]
+        self.bind(pos=self.redraw_widget)
+        self.bind(size=self.redraw_widget)
+
+    @property
+    def grid(self):
+        """ Grid object """
+        return self._grid
+
+    @property
+    def label_panel(self):
+        """ Label panel object """
+        return self._label_panel
+
+    @property
+    def num_panel(self):
+        """ Number panel object """
+        return self._num_panel
 
     @property
     def cols(self):
@@ -111,12 +128,21 @@ class MyTable(BoxLayout):
         Choose a row in our table.
         Example: choose_row(1)
         """
-        for col_num in range(self._cols):
-            old_grid_element = self.get_item(self.choosen_row, col_num)
-            old_grid_element.set_background_color(
+        if len(self.grid.children) > 0:
+            for col_num in range(self._cols):
+                old_grid_element = self.get_item(self._choosen_row, col_num)
+                old_grid_element.set_background_color(
                                                 old_grid_element.DEFAULT_COLOR)
-            self.get_item(row_num, col_num).set_background_color()
-        self.choosen_row = row_num
+                self.get_item(row_num, col_num).set_background_color()
+            self._choosen_row = row_num
+
+    def redraw_widget(self, *args):
+        """ Method of redraw this widget """
+        print 'TABLE SIZE %s POS %s' % (str(self.size), str(self.pos))
+        with self.canvas.before:
+            self.canvas.before.clear()
+            Color(*get_color_from_hex('#333333'))
+            Rectangle(pos=self.pos, size=self.size)
 
 
 
@@ -126,6 +152,20 @@ class ScrollViewTable(ScrollView):
         super(ScrollViewTable, self).__init__(**kwargs)
         self.bind(pos=self.redraw_widget)
         self.bind(size=self.redraw_widget)
+        self._bkgcolor = '#444444'
+
+    @property
+    def bkgcolor(self):
+        """ Background color """
+        return self._bkgcolor
+
+    @bkgcolor.setter
+    def bkgcolor(self, color):
+        with self.canvas.before:
+            # Not clear, because error
+            self._bkgcolor = color
+            Color(*get_color_from_hex(self._bkgcolor))
+        self.redraw_widget()
 
     def redraw_widget(self, *args):
         """ Method of redraw this widget """
@@ -140,9 +180,19 @@ class LabelPanel(BoxLayout):
         super(LabelPanel, self).__init__(**kwargs)
         self.bind(pos=self.redraw_widget)
         self.bind(size=self.redraw_widget)
-        self.set_background_color('#444444')
         self._visible = True
         self._height = 30
+        self._bkgcolor = '#444444'
+
+    @property
+    def bkgcolor(self):
+        """ Background color """
+        return self._bkgcolor
+
+    @bkgcolor.setter
+    def bkgcolor(self, color):
+        self._bkgcolor = color
+        self.redraw_widget()
 
     @property
     def visible(self):
@@ -172,14 +222,11 @@ class LabelPanel(BoxLayout):
     def redraw_widget(self, *args):
         """ Method of redraw this widget """
         with self.canvas.before:
+            self.canvas.before.clear()
+            if len(self.children) > 0:
+                self.children[-1].bkgcolor = self._bkgcolor
+            Color(*get_color_from_hex(self._bkgcolor))
             Rectangle(pos=self.pos, size=self.size)
-
-    def set_background_color(self, hex_color='#ffffff'):
-        """ Setting scrollview color """
-        with self.canvas.before:
-            color = get_color_from_hex(hex_color)
-            Color(*color)
-            Rectangle(size=self.size, pos=self.pos)
 
 
 
@@ -227,14 +274,9 @@ class NumPanel(BoxLayout):
     def redraw_widget(self, *args):
         """ Method of redraw this widget """
         with self.canvas.before:
+            self.canvas.before.clear()
+            Color(*get_color_from_hex('#444444'))
             Rectangle(pos=self.pos, size=self.size)
-
-    def set_background_color(self, hex_color='#ffffff'):
-        """ Setting scrollview color """
-        with self.canvas.before:
-            color = get_color_from_hex(hex_color)
-            Color(*color)
-            Rectangle(size=self.size, pos=self.pos)
 
 
 
@@ -253,6 +295,17 @@ class GridTable(GridLayout):
         self.bind(pos=self.redraw_widget)
         self.bind(size=self.redraw_widget)
         self.bind(minimum_height=self.setter('height'))
+        self._bkgcolor = '#444444'
+
+    @property
+    def bkgcolor(self):
+        """ Background color """
+        return self._bkgcolor
+
+    @bkgcolor.setter
+    def bkgcolor(self, color):
+        self._bkgcolor = color
+        self.redraw_widget()
 
     def get_row_index(self, item_object):
         """ Get select item index """
@@ -266,8 +319,12 @@ class GridTable(GridLayout):
 
     def redraw_widget(self, *args):
         """ Method of redraw this widget """
+        print 'GRID SIZE %s POS %s' % (str(self.size), str(self.pos))
         with self.canvas.before:
+            self.canvas.before.clear()
+            Color(*get_color_from_hex(self._bkgcolor))
             Rectangle(pos=self.pos, size=self.size)
+            self.parent.parent.bkgcolor = self._bkgcolor
 
 
 
@@ -314,14 +371,25 @@ class NewLabel(Button):
 
 
 
-class NewNullLabel(Button):
+class NullLabel(Button):
     """Num Label object class"""
 
     def __init__(self, **kwargs):
-        super(NewNullLabel, self).__init__(**kwargs)
+        super(NullLabel, self).__init__(**kwargs)
         self.bind(pos=self.redraw_widget)
         self.bind(size=self.redraw_widget)
         self.bind(on_press = self.on_press_button)
+        self._bkgcolor = '#444444'
+
+    @property
+    def bkgcolor(self):
+        """ Background color """
+        return self._bkgcolor
+
+    @bkgcolor.setter
+    def bkgcolor(self, color):
+        self._bkgcolor = color
+        self.redraw_widget()
         
     def set_background_color(self, hex_color='#ffffff'):
         """ Set hex background color """
@@ -336,6 +404,8 @@ class NewNullLabel(Button):
     def redraw_widget(self, *args):
         """ Method of redraw this widget """
         with self.canvas.before:
+            self.canvas.before.clear()
+            Color(*get_color_from_hex(self._bkgcolor))
             Rectangle(pos=self.pos, size=self.size)
         
         
