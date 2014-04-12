@@ -27,8 +27,8 @@ class MainScreen(BoxLayout):
         self.add_widget(self.my_table)
         self.my_table.cols = 2
         for i in range(110):
-            # self.my_table.add_line('asd','qwe'+str(i),'zxc'+str(i),'123'+str(i))
-            self.my_table.add_custom_line(NewButton(text=('asd%d'%i)), 
+            # self.my_table.add_row('asd','qwe'+str(i),'zxc'+str(i),'123'+str(i))
+            self.my_table.add_custom_row(NewButton(text=('asd%d'%i)), 
                                           NewButton(text=('qwe%d'%i)))
         # self.my_table.label_panel.visible = False
         print 'VISIBLE', self.my_table.label_panel.visible
@@ -39,9 +39,10 @@ class MainScreen(BoxLayout):
         # self.my_table.num_panel.visible = False
         self.my_table.choose_row(0)
         print self.my_table.get_row_count()
-        self.my_table.del_line(5)
-        self.my_table.grid.bkgcolor = '#ff00ff'
-        self.my_table.label_panel.bkgcolor = '#00ff00'
+        self.my_table.del_row(5)
+        self.my_table.grid.bkcolor = '#ff0000'
+        self.my_table.label_panel.bkcolor = '#00ff00'
+        self.my_table.num_panel.bkcolor = '#0000ff'
         # Clock.schedule_interval(self.clock_callback, 1)
 
     def clock_callback(self, dt):
