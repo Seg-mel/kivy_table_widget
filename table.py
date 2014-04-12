@@ -30,7 +30,7 @@ class Table(BoxLayout):
         # Getting the GridTable object for working with it
         self._grid = self.children[0].children[0].children[0]
         # Getting the NumPanel object for working with it
-        self._num_panel = self.children[0].children[0].children[1]
+        self._number_panel = self.children[0].children[0].children[1]
         self.bind(pos=self.redraw_widget)
         self.bind(size=self.redraw_widget)
 
@@ -45,15 +45,14 @@ class Table(BoxLayout):
         return self._label_panel
 
     @property
-    def num_panel(self):
+    def number_panel(self):
         """ Number panel object """
-        return self._num_panel
+        return self._number_panel
 
     @property
     def cols(self):
         """ Get/set number of columns """
         return self._cols
-
     @cols.setter
     def cols(self, number=0):
         self._cols = number
@@ -61,28 +60,46 @@ class Table(BoxLayout):
         for num in range(number):
             self.label_panel.add_widget(NewLabel())
 
-    def add_row(self, *args):
+    def add_button_row(self, *args):
         """ 
         Add new row to table with Button widgets.
         Example: add_row('123', 'asd', '()_+')
         """
         if len(args)==self._cols:
+            row_widget_list = []
             for num, item in enumerate(args):
-                self.grid.add_widget(NewButton(text=item))
-            self.num_panel.add_widget(NewNumberLabel(
+                Cell = type('Cell', (NewCell, Button), {})
+                cell = Cell()
+                cell.text = item
+                self.grid.add_widget(cell)
+                # Create widgets row list
+                row_widget_list.append(self.grid.children[0])
+            # Adding a widget to two-level array 
+            self._grid._cells.append(row_widget_list)
+            self.number_panel.add_widget(NewNumberLabel(
                                                text=str(self.get_row_count())))
         else:
             print 'ERROR: Please, add %s strings in method\'s arguments' %\
                                                               str(self._cols)
-    def add_custom_row(self, *args):
-        """ 
+
+    def add_row(self, *args):
+        """
         Add new row to table with custom widgets.
-        Example: add_custom_row(Button(), Label())
+        Example: add_custom_row([Button, text='text'], [TextInput])
         """
         if len(args)==self._cols:
+            row_widget_list = []
             for num, item in enumerate(args):
-                self.grid.add_widget(item)
-            self.num_panel.add_widget(NewNumberLabel(
+                Cell = type('Cell', (NewCell, item[0]), {})
+                cell = Cell()
+                for key in item[1].keys():
+                    setattr(cell, key, item[1][key])
+                self.grid.add_widget(cell)
+                # Create widgets row list
+                row_widget_list.append(self.grid.children[0])
+            # Adding a widget to two-level array 
+            self._grid._cells.append(row_widget_list)
+            self.number_panel.add_widget(NewNumberLabel(
                                                text=str(self.get_row_count())))
         else:
             print 'ERROR: Please, add %s strings in method\'s arguments' %\
@@ -90,27 +107,10 @@ class Table(BoxLayout):
 
     def del_row(self, number):
         """ Delete a row by number """
-        for col in range(self._cols):
-            self.grid.remove_widget(self.get_item(number, 0))
-            print 'DELETED:', (number, col)
-        self.num_panel.remove_widget(self.num_panel.children[0])
-
-    def get_item(self, row_num, col_num):
-        """ 
-        Get item by coordinates. 
-        row_num = 0..n, col_num = 0..n.
-        Example: get_item(13,12)
-        """
-        item_num = row_num*self._cols+col_num
-        grid_children = reversed(self.grid.children)
-        if (len(self.grid.children)>item_num) and (col_num<self._cols):
-            for num, child in enumerate(grid_children):
-                if num == item_num:
-                    return child
-                    break
-        else:
-            print "EROOR: Coordinates does not exist!"
-            return None
+        for cell in self.grid.cells[number]:
+            self.grid.remove_widget(cell)
+        del self.grid.cells[number]
+        self.number_panel.remove_widget(self.number_panel.children[0])
 
     def get_row_count(self):
     	""" Get row count in our table """
@@ -128,10 +128,10 @@ class Table(BoxLayout):
         """
         if len(self.grid.children) > 0:
             for col_num in range(self._cols):
-                old_grid_element = self.get_item(self._choosen_row, col_num)
+                old_grid_element = self.grid.cells[self._choosen_row][col_num]
                 old_grid_element.set_background_color(
                                                 old_grid_element.DEFAULT_COLOR)
-                self.get_item(row_num, col_num).set_background_color()
+                self.grid.cells[row_num][col_num].set_background_color()
             self._choosen_row = row_num
 
     def redraw_widget(self, *args):
@@ -156,7 +156,6 @@ class ScrollViewTable(ScrollView):
     def bkcolor(self):
         """ Background color """
         return self._bkcolor
-
     @bkcolor.setter
     def bkcolor(self, color):
         with self.canvas.before:
@@ -186,7 +185,6 @@ class LabelPanel(BoxLayout):
     def bkcolor(self):
         """ Background color """
         return self._bkcolor
-
     @bkcolor.setter
     def bkcolor(self, color):
         self._bkcolor = color
@@ -196,7 +194,6 @@ class LabelPanel(BoxLayout):
     def visible(self):
         """ Get/set panel visible """
         return self._visible
-
     @visible.setter
     def visible(self, visible=True):
         if visible:
@@ -210,7 +207,6 @@ class LabelPanel(BoxLayout):
     def height_widget(self):
         """ Get/set panel height """
         return self.height
-
     @height_widget.setter
     def height_widget(self, height=30):
         if self._visible == True:
@@ -221,8 +217,8 @@ class LabelPanel(BoxLayout):
         """ Method of redraw this widget """
         with self.canvas.before:
             self.canvas.before.clear()
-            # if len(self.children) > 0:
-            #     self.children[-1].bkcolor = self._bkcolor
+            if len(self.children) > 0:
+                self.children[-1].bkcolor = self._bkcolor
             Color(*get_color_from_hex(self._bkcolor))
             Rectangle(pos=self.pos, size=self.size)
 
@@ -242,7 +238,6 @@ class NumPanel(BoxLayout):
     def bkcolor(self):
         """ Background color """
         return self._bkcolor
-
     @bkcolor.setter
     def bkcolor(self, color):
         self._bkcolor = color
@@ -252,7 +247,6 @@ class NumPanel(BoxLayout):
     def visible(self):
         """ Get/set panel visible """
         return self._visible
-
     @visible.setter
     def visible(self, visible=True):
         # Get null label object
@@ -270,7 +264,6 @@ class NumPanel(BoxLayout):
     def width_widget(self):
         """ Get/set panel width """
         return self.width
-
     @width_widget.setter
     def width_widget(self, width=30):
         # Get null label object
@@ -305,16 +298,30 @@ class GridTable(GridLayout):
         self.bind(size=self.redraw_widget)
         self.bind(minimum_height=self.setter('height'))
         self._bkcolor = '#444444'
+        self._cells = []
+        self._current_cell = None
+
+    @property
+    def current_cell(self):
+        """ Current cell """
+        return self._current_cell
+    @current_cell.setter
+    def current_cell(self, value):
+        self._current_cell = value
 
     @property
     def bkcolor(self):
         """ Background color """
         return self._bkcolor
-
     @bkcolor.setter
     def bkcolor(self, color):
         self._bkcolor = color
         self.redraw_widget()
+
+    @property
+    def cells(self):
+        """ Two-level array of cells """
+        return self._cells
 
     def get_row_index(self, item_object):
         """ Get select item index """
@@ -337,22 +344,27 @@ class GridTable(GridLayout):
 
 
 
-class NewButton(Button):
+class NewCell(object):
     """Grid/button element for table"""
 
     DEFAULT_COLOR = '#123123'
     DEFAULT_CONFIG_COLOR = get_color_from_hex(DEFAULT_COLOR)
 
     def __init__(self, **kwargs):
-        super(NewButton, self).__init__(**kwargs)
+        super(NewCell, self).__init__(**kwargs)
+        # Binds for click on this cell
         self.bind(on_press = self.on_press_button)
+        try:
+            self.bind(focus=self.on_press_button)
+        except: pass
 
     def set_background_color(self, hex_color='#005522'):
         """ Set hex background color """
         self.background_color = get_color_from_hex(hex_color)
 
-    def on_press_button(self, touch=None):
+    def on_press_button(self, *args):
         """ On press method for current object """
+        self.parent.current_cell = args[0]
         self.state = 'normal'
         print 'pressed on grid item'
         self.main_table = self.parent.parent.parent.parent
@@ -373,11 +385,6 @@ class NewLabel(Button):
         self.state = 'normal'
         print 'pressed on label label'
 
-    def redraw_widget(self, *args):
-        """ Method of redraw this widget """
-        with self.canvas.before:
-            Rectangle(pos=self.pos, size=self.size)
-
 
 
 class NullLabel(Button):
@@ -394,7 +401,6 @@ class NullLabel(Button):
     def bkcolor(self):
         """ Background color """
         return self._bkcolor
-
     @bkcolor.setter
     def bkcolor(self, color):
         self._bkcolor = color
