@@ -26,8 +26,11 @@ class MainScreen(BoxLayout):
         self.my_table.cols = 2
         for i in range(110):
             # self.my_table.add_button_row('123','456'+str(i))
-            self.my_table.add_row([Button, {'text':'asd%s'%i}], 
-                                         [TextInput, {'text':'qwe%s'%i}])
+            self.my_table.add_row([Button, {'text':'asd%s'%i,
+                                            'color_widget': [0,0,0.5,1],
+                                            'color_click': [0,1,0,1]}], 
+                                  [TextInput, {'text':'qwe%s'%i,
+                                               'color_click': [1,0,0,1]}])
         # self.my_table.label_panel.visible = False
         self.my_table.label_panel.height_widget = 50
         # self.my_table.number_panel.auto_width = False
@@ -36,9 +39,9 @@ class MainScreen(BoxLayout):
         self.my_table.choose_row(0)
         print "ROW COUNT:", self.my_table.row_count
         self.my_table.del_row(3)
-        self.my_table.grid.bkcolor = '#ff0000'
-        self.my_table.label_panel.bkcolor = '#00ff00'
-        self.my_table.number_panel.bkcolor = '#0000ff'
+        self.my_table.grid.bkcolor = [1, 0, 0, 1]
+        self.my_table.label_panel.bkcolor = [0, 1, 0, 1]
+        self.my_table.number_panel.bkcolor = [0, 0, 1, 1]
         self.my_table.grid.cells[0][0].text = 'asdasdasdasds'
         self.my_table.grid.cells[1][1].text = 'qqweqweqwe'
         self.my_table.grid.cells[1][1].height = 50

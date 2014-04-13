@@ -130,9 +130,9 @@ class Table(BoxLayout):
         if len(self.grid.children) > 0:
             for col_num in range(self._cols):
                 old_grid_element = self.grid.cells[self._choosen_row][col_num]
-                old_grid_element.set_background_color(
-                                                old_grid_element.DEFAULT_COLOR)
-                self.grid.cells[row_num][col_num].set_background_color()
+                current_cell = self.grid.cells[row_num][col_num]
+                old_grid_element._background_color(old_grid_element.color_widget)
+                current_cell._background_color(current_cell.color_click)
             self._choosen_row = row_num
 
     def redraw_widget(self, *args):
@@ -150,7 +150,7 @@ class ScrollViewTable(ScrollView):
         super(ScrollViewTable, self).__init__(**kwargs)
         self.bind(pos=self.redraw_widget)
         self.bind(size=self.redraw_widget)
-        self._bkcolor = '#444444'
+        self._bkcolor = [.2, .2, .2, 1]
 
     @property
     def bkcolor(self):
@@ -161,7 +161,7 @@ class ScrollViewTable(ScrollView):
         with self.canvas.before:
             # Not clear, because error
             self._bkcolor = color
-            Color(*get_color_from_hex(self._bkcolor))
+            Color(*self._bkcolor)
         self.redraw_widget()
 
     def redraw_widget(self, *args):
@@ -192,7 +192,7 @@ class LabelPanel(BoxLayout):
         self.bind(size=self.redraw_widget)
         self._visible = True
         self._height = 30
-        self._bkcolor = '#444444'
+        self._bkcolor = [.2, .2, .2, 1]
 
     @property
     def bkcolor(self):
@@ -232,7 +232,7 @@ class LabelPanel(BoxLayout):
             self.canvas.before.clear()
             if len(self.children) > 0:
                 self.children[-1].bkcolor = self._bkcolor
-            Color(*get_color_from_hex(self._bkcolor))
+            Color(*self._bkcolor)
             Rectangle(pos=self.pos, size=self.size)
 
 
@@ -245,7 +245,7 @@ class NumberPanel(BoxLayout):
         self.bind(size=self.redraw_widget)
         self._visible = True
         self._width = 30
-        self._bkcolor = '#444444'
+        self._bkcolor = [.2, .2, .2, 1]
         self._auto_width = True
 
     @property
@@ -300,7 +300,7 @@ class NumberPanel(BoxLayout):
         """ Method of redraw this widget """
         with self.canvas.before:
             self.canvas.before.clear()
-            Color(*get_color_from_hex(self._bkcolor))
+            Color(*self._bkcolor)
             Rectangle(pos=self.pos, size=self.size)
 
 
@@ -312,7 +312,7 @@ class GridTable(GridLayout):
         self.bind(pos=self.redraw_widget)
         self.bind(size=self.redraw_widget)
         self.bind(minimum_height=self.setter('height'))
-        self._bkcolor = '#444444'
+        self._bkcolor = [.2, .2, .2, 1]
         self._cells = []
         self._current_cell = None
 
@@ -352,7 +352,7 @@ class GridTable(GridLayout):
         """ Method of redraw this widget """
         with self.canvas.before:
             self.canvas.before.clear()
-            Color(*get_color_from_hex(self._bkcolor))
+            Color(*self._bkcolor)
             Rectangle(pos=self.pos, size=self.size)
         self.parent.parent.bkcolor = self._bkcolor
 
@@ -360,9 +360,6 @@ class GridTable(GridLayout):
 
 class NewCell(object):
     """Grid/button element for table"""
-
-    DEFAULT_COLOR = '#123123'
-    DEFAULT_CONFIG_COLOR = get_color_from_hex(DEFAULT_COLOR)
 
     def __init__(self, **kwargs):
         super(NewCell, self).__init__(**kwargs)
@@ -373,10 +370,29 @@ class NewCell(object):
         try:
             self.bind(focus=self.on_press_button)
         except: pass
+        self._color_widget = [1, 1, 1, 1]
+        self._color_click = [.1, .1, .1, 1]
 
-    def set_background_color(self, hex_color='#005522'):
-        """ Set hex background color """
-        self.background_color = get_color_from_hex(hex_color)
+    def _background_color(self, value):
+        """ Set the background color """
+        self.background_color = value
+
+    @property
+    def color_widget(self):
+        """ Cell color """
+        return self._color_widget
+    @color_widget.setter
+    def color_widget(self, value):
+        self._color_widget = value
+        self.background_color = value
+
+    @property
+    def color_click(self):
+        """ Cell click color """
+        return self._color_click
+    @color_click.setter
+    def color_click(self, value):
+        self._color_click = value
 
     def on_press_button(self, *args):
         """ On press method for current object """
@@ -385,7 +401,7 @@ class NewCell(object):
         print 'pressed on grid item'
         self.main_table = self.parent.parent.parent.parent
         self.grid = self.parent
-        self.set_background_color()
+        # self.bkcolor = self._bkcolor
         self.main_table.choose_row(self.grid.get_row_index(self))
 
     def redraw_widget(self, *args):
@@ -421,7 +437,7 @@ class NullLabel(Button):
         self.bind(pos=self.redraw_widget)
         self.bind(size=self.redraw_widget)
         self.bind(on_press = self.on_press_button)
-        self._bkcolor = '#444444'
+        self._bkcolor = [.2, .2, .2, 1]
 
     @property
     def bkcolor(self):
@@ -442,7 +458,7 @@ class NullLabel(Button):
         """ Method of redraw this widget """
         with self.canvas.before:
             self.canvas.before.clear()
-            Color(*get_color_from_hex(self._bkcolor))
+            Color(*self._bkcolor)
             Rectangle(pos=self.pos, size=self.size)
         
         
