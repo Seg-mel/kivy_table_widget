@@ -16,7 +16,7 @@
 
         ScrollViewBoxLayout:
 
-            NumPanel:
+            NumberPanel:
 
             GridTable:
 
@@ -39,7 +39,7 @@
     cols: 2
     size_hint: 1, None # Not scroll without it
 
-<NumPanel>:
+<NumberPanel>:
     orientation: 'vertical'
     size_hint: None, 1
     width: 30
@@ -60,13 +60,13 @@
     size_hint: None, 1
 
 <NewNumberLabel>:
-    size_hint: 1, 1
+    size_hint: 1, None
     font_size: 14
     # font_name: 'Terminus'
     valign: 'middle'
-    halign: 'center'
-    max_lines: 1
-    text_size: (self.width, self.height)
+    # halign: 'center'
+    # max_lines: 1
+    # text_size: (self.width, self.height)
 
 <NewCell>:
     size_hint: 1, None

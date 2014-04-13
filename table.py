@@ -29,7 +29,7 @@ class Table(BoxLayout):
         self._label_panel = self.children[1]
         # Getting the GridTable object for working with it
         self._grid = self.children[0].children[0].children[0]
-        # Getting the NumPanel object for working with it
+        # Getting the NumberPanel object for working with it
         self._number_panel = self.children[0].children[0].children[1]
         self.bind(pos=self.redraw_widget)
         self.bind(size=self.redraw_widget)
@@ -60,12 +60,22 @@ class Table(BoxLayout):
         for num in range(number):
             self.label_panel.add_widget(NewLabel())
 
+    @property
+    def row_count(self):
+        """ Get row count in our table """
+        grid_item_count = len(self.grid.children)
+        count = grid_item_count/self._cols
+        remainder = grid_item_count%self._cols
+        if remainder > 0:
+            count += 1
+        return count
+
     def add_button_row(self, *args):
         """ 
         Add new row to table with Button widgets.
-        Example: add_row('123', 'asd', '()_+')
+        Example: add_button_row('123', 'asd', '()_+')
         """
-        if len(args)==self._cols:
+        if len(args) == self._cols:
             row_widget_list = []
             for num, item in enumerate(args):
                 Cell = type('Cell', (NewCell, Button), {})
@@ -77,7 +87,7 @@ class Table(BoxLayout):
             # Adding a widget to two-level array 
             self._grid._cells.append(row_widget_list)
             self.number_panel.add_widget(NewNumberLabel(
-                                               text=str(self.get_row_count())))
+                                               text=str(self.row_count)))
         else:
             print 'ERROR: Please, add %s strings in method\'s arguments' %\
                                                               str(self._cols)
@@ -85,9 +95,9 @@ class Table(BoxLayout):
     def add_row(self, *args):
         """
         Add new row to table with custom widgets.
-        Example: add_custom_row([Button, text='text'], [TextInput])
+        Example: add_row([Button, text='text'], [TextInput])
         """
-        if len(args)==self._cols:
+        if len(args) == self._cols:
             row_widget_list = []
             for num, item in enumerate(args):
                 Cell = type('Cell', (NewCell, item[0]), {})
@@ -100,7 +110,7 @@ class Table(BoxLayout):
             # Adding a widget to two-level array 
             self._grid._cells.append(row_widget_list)
             self.number_panel.add_widget(NewNumberLabel(
-                                               text=str(self.get_row_count())))
+                                               text=str(self.row_count)))
         else:
             print 'ERROR: Please, add %s strings in method\'s arguments' %\
                                                               str(self._cols)
@@ -111,15 +121,6 @@ class Table(BoxLayout):
             self.grid.remove_widget(cell)
         del self.grid.cells[number]
         self.number_panel.remove_widget(self.number_panel.children[0])
-
-    def get_row_count(self):
-    	""" Get row count in our table """
-    	grid_item_count = len(self.grid.children)
-    	row_count = grid_item_count/self._cols
-    	remainder = grid_item_count%self._cols
-    	if remainder>0:
-    		row_count+=1
-    	return row_count
 
     def choose_row(self, row_num=0):
         """ 
@@ -136,7 +137,6 @@ class Table(BoxLayout):
 
     def redraw_widget(self, *args):
         """ Method of redraw this widget """
-        print 'TABLE SIZE %s POS %s' % (str(self.size), str(self.pos))
         with self.canvas.before:
             self.canvas.before.clear()
             Color(*get_color_from_hex('#333333'))
@@ -168,6 +168,19 @@ class ScrollViewTable(ScrollView):
         """ Method of redraw this widget """
         with self.canvas.before:
             Rectangle(pos=self.pos, size=self.size)
+        # Editting the number panel width
+        number_panel = self.children[0].children[1]
+        if number_panel.auto_width:
+            last_number_label = self.children[0].children[1].children[0]
+            number_panel.width_widget = last_number_label.texture_size[0] + 10
+
+
+
+class ScrollViewBoxLayout(GridLayout):
+    """ScrollView's BoxLayout class"""
+    def __init__(self, **kwargs):
+        super(ScrollViewBoxLayout, self).__init__(**kwargs)
+        self.bind(minimum_height=self.setter('height'))
 
 
 
@@ -209,7 +222,7 @@ class LabelPanel(BoxLayout):
         return self.height
     @height_widget.setter
     def height_widget(self, height=30):
-        if self._visible == True:
+        if self._visible:
             self._height = height
             self.height = height
 
@@ -224,15 +237,25 @@ class LabelPanel(BoxLayout):
 
 
 
-class NumPanel(BoxLayout):
+class NumberPanel(BoxLayout):
     """Num panel class"""
     def __init__(self, **kwargs):
-        super(NumPanel, self).__init__(**kwargs)
+        super(NumberPanel, self).__init__(**kwargs)
         self.bind(pos=self.redraw_widget)
         self.bind(size=self.redraw_widget)
         self._visible = True
         self._width = 30
         self._bkcolor = '#444444'
+        self._auto_width = True
+
+    @property
+    def auto_width(self):
+        """ Auto width this panel """
+        return self._auto_width
+    @auto_width.setter
+    def auto_width(self, value):
+        self._auto_width = value
+    
 
     @property
     def bkcolor(self):
@@ -263,9 +286,9 @@ class NumPanel(BoxLayout):
     @property
     def width_widget(self):
         """ Get/set panel width """
-        return self.width
+        return self._width
     @width_widget.setter
-    def width_widget(self, width=30):
+    def width_widget(self, width):
         # Get null label object
         null_label = self.parent.parent.parent.label_panel.children[-1]
         if self._visible == True:
@@ -280,14 +303,6 @@ class NumPanel(BoxLayout):
             Color(*get_color_from_hex(self._bkcolor))
             Rectangle(pos=self.pos, size=self.size)
 
-
-
-class ScrollViewBoxLayout(GridLayout):
-    """ScrollView's BoxLayout class"""
-    def __init__(self, **kwargs):
-        super(ScrollViewBoxLayout, self).__init__(**kwargs)
-        self.bind(minimum_height=self.setter('height'))
-        
 
 
 class GridTable(GridLayout):
@@ -335,12 +350,11 @@ class GridTable(GridLayout):
 
     def redraw_widget(self, *args):
         """ Method of redraw this widget """
-        print 'GRID SIZE %s POS %s' % (str(self.size), str(self.pos))
         with self.canvas.before:
             self.canvas.before.clear()
             Color(*get_color_from_hex(self._bkcolor))
             Rectangle(pos=self.pos, size=self.size)
-            self.parent.parent.bkcolor = self._bkcolor
+        self.parent.parent.bkcolor = self._bkcolor
 
 
 
@@ -352,6 +366,8 @@ class NewCell(object):
 
     def __init__(self, **kwargs):
         super(NewCell, self).__init__(**kwargs)
+        # self.bind(pos=self.redraw_widget)
+        self.bind(size=self.redraw_widget)
         # Binds for click on this cell
         self.bind(on_press = self.on_press_button)
         try:
@@ -371,6 +387,16 @@ class NewCell(object):
         self.grid = self.parent
         self.set_background_color()
         self.main_table.choose_row(self.grid.get_row_index(self))
+
+    def redraw_widget(self, *args):
+        """ Method of redraw this widget """
+        # Editting a height of number label in this row
+        for num, line in enumerate(self.parent.cells):
+            for cell in line:
+                if cell == self:
+                    self.parent.parent.children[1].children[-(num+1)].height =\
+                                                                    self.height
+                    break
 
 
 
@@ -405,10 +431,6 @@ class NullLabel(Button):
     def bkcolor(self, color):
         self._bkcolor = color
         self.redraw_widget()
-        
-    def set_background_color(self, hex_color='#ffffff'):
-        """ Set hex background color """
-        self.background_color = get_color_from_hex(hex_color)
 
     def on_press_button(self, touch=None):
         """ On press method for current object """
