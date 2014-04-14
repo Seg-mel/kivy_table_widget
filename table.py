@@ -3,7 +3,6 @@
 
 import kivy
 from kivy.lang import Builder
-from kivy.utils import get_color_from_hex
 from kivy.graphics import Color, Rectangle
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
@@ -11,6 +10,7 @@ from kivy.uix.scrollview import ScrollView
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.properties import ListProperty, BooleanProperty
+from kivy.effects.kinetic import KineticEffect
 
 
 
@@ -31,8 +31,12 @@ class Table(BoxLayout):
         self._grid = self.children[0].children[0].children[0]
         # Getting the NumberPanel object for working with it
         self._number_panel = self.children[0].children[0].children[1]
-        self.bind(pos=self.redraw_widget)
-        self.bind(size=self.redraw_widget)
+        # Getting the ScrollViewTable object for working with it
+        self._scroll_view = self.children[0]
+
+    @property
+    def scroll_view(self):
+        return self._scroll_view
 
     @property
     def grid(self):
@@ -155,22 +159,17 @@ class Table(BoxLayout):
                 current_cell._background_color(current_cell.color_click)
             self._chosen_row = row_num
 
-    def redraw_widget(self, *args):
-        """ Method of redraw this widget """
-        with self.canvas.before:
-            self.canvas.before.clear()
-            Color(*get_color_from_hex('#333333'))
-            Rectangle(pos=self.pos, size=self.size)
-
 
 
 class ScrollViewTable(ScrollView):
     """ScrollView for grid table"""
     def __init__(self, **kwargs):
         super(ScrollViewTable, self).__init__(**kwargs)
-        self.bind(pos=self.redraw_widget)
-        self.bind(size=self.redraw_widget)
+        # self.bind(pos=self._redraw_widget)
+        self.bind(size=self._redraw_widget)
         self._bkcolor = [.2, .2, .2, 1]
+        # Start scroll_y pisition
+        self.scroll_y = 1
 
     @property
     def bkcolor(self):
@@ -182,9 +181,9 @@ class ScrollViewTable(ScrollView):
             # Not clear, because error
             self._bkcolor = color
             Color(*self._bkcolor)
-        self.redraw_widget()
+        self._redraw_widget()
 
-    def redraw_widget(self, *args):
+    def _redraw_widget(self, *args):
         """ Method of redraw this widget """
         with self.canvas.before:
             Rectangle(pos=self.pos, size=self.size)
@@ -193,6 +192,28 @@ class ScrollViewTable(ScrollView):
         if number_panel.auto_width and len(number_panel.children) > 0:
             last_number_label = self.children[0].children[1].children[0]
             number_panel.width_widget = last_number_label.texture_size[0] + 10
+
+    def down(self, row_num):
+        count_end_window = (float(self.parent.height) - \
+                                            self.parent.children[1].height) / \
+                float(self.children[0].children[0].children[-row_num].height)
+        print count_end_window
+        count_row = float(len(self.children[0].children[0].cells))
+        print count_row
+        if self.scroll_y > 0:
+            self.scroll_y = 1. - 1. * float(row_num) / \
+                                                 (count_row - count_end_window)
+        if self.scroll_y < 0:
+            self.scroll_y = 0
+        self.update_from_scroll()
+
+    def home(self):
+        """ Scrolling to the top of the table """
+        self.scroll_y = 1
+
+    def end(self):
+        """ Scrolling to the bottom of the table """
+        self.scroll_y = 0
 
 
 
@@ -208,8 +229,8 @@ class LabelPanel(BoxLayout):
     """Panel for column labels"""
     def __init__(self, **kwargs):
         super(LabelPanel, self).__init__(**kwargs)
-        self.bind(pos=self.redraw_widget)
-        self.bind(size=self.redraw_widget)
+        # self.bind(pos=self._redraw_widget)
+        self.bind(size=self._redraw_widget)
         self._visible = True
         self._height = 30
         self._bkcolor = [.2, .2, .2, 1]
@@ -221,7 +242,7 @@ class LabelPanel(BoxLayout):
     @bkcolor.setter
     def bkcolor(self, color):
         self._bkcolor = color
-        self.redraw_widget()
+        self._redraw_widget()
 
     @property
     def visible(self):
@@ -246,7 +267,7 @@ class LabelPanel(BoxLayout):
             self._height = height
             self.height = height
 
-    def redraw_widget(self, *args):
+    def _redraw_widget(self, *args):
         """ Method of redraw this widget """
         with self.canvas.before:
             self.canvas.before.clear()
@@ -261,8 +282,8 @@ class NumberPanel(BoxLayout):
     """Num panel class"""
     def __init__(self, **kwargs):
         super(NumberPanel, self).__init__(**kwargs)
-        self.bind(pos=self.redraw_widget)
-        self.bind(size=self.redraw_widget)
+        # self.bind(pos=self._redraw_widget)
+        self.bind(size=self._redraw_widget)
         self._visible = True
         self._width = 30
         self._bkcolor = [.2, .2, .2, 1]
@@ -284,7 +305,7 @@ class NumberPanel(BoxLayout):
     @bkcolor.setter
     def bkcolor(self, color):
         self._bkcolor = color
-        self.redraw_widget()
+        self._redraw_widget()
 
     @property
     def visible(self):
@@ -316,7 +337,7 @@ class NumberPanel(BoxLayout):
             self.width = width
             null_label.width = width
 
-    def redraw_widget(self, *args):
+    def _redraw_widget(self, *args):
         """ Method of redraw this widget """
         with self.canvas.before:
             self.canvas.before.clear()
@@ -329,8 +350,8 @@ class GridTable(GridLayout):
     """This is the table itself"""
     def __init__(self, **kwargs):
         super(GridTable, self).__init__(**kwargs)
-        self.bind(pos=self.redraw_widget)
-        self.bind(size=self.redraw_widget)
+        # self.bind(pos=self._redraw_widget)
+        self.bind(size=self._redraw_widget)
         self.bind(minimum_height=self.setter('height'))
         self._bkcolor = [.2, .2, .2, 1]
         self._cells = []
@@ -351,14 +372,14 @@ class GridTable(GridLayout):
     @bkcolor.setter
     def bkcolor(self, color):
         self._bkcolor = color
-        self.redraw_widget()
+        self._redraw_widget()
 
     @property
     def cells(self):
         """ Two-level array of cells """
         return self._cells
 
-    def get_row_index(self, item_object):
+    def _get_row_index(self, item_object):
         """ Get select item index """
         for index, child in enumerate(reversed(self.children)):
             if item_object == child:
@@ -368,7 +389,7 @@ class GridTable(GridLayout):
                 return row_index
                 break
 
-    def redraw_widget(self, *args):
+    def _redraw_widget(self, *args):
         """ Method of redraw this widget """
         with self.canvas.before:
             self.canvas.before.clear()
@@ -383,8 +404,8 @@ class NewCell(object):
 
     def __init__(self, **kwargs):
         super(NewCell, self).__init__(**kwargs)
-        # self.bind(pos=self.redraw_widget)
-        self.bind(size=self.redraw_widget)
+        # self.bind(pos=self._redraw_widget)
+        self.bind(size=self._redraw_widget)
         # Binds for click on this cell
         self.bind(on_press = self.on_press_button)
         try:
@@ -422,9 +443,9 @@ class NewCell(object):
         self.main_table = self.parent.parent.parent.parent
         self.grid = self.parent
         # self.bkcolor = self._bkcolor
-        self.main_table.choose_row(self.grid.get_row_index(self))
+        self.main_table.choose_row(self.grid._get_row_index(self))
 
-    def redraw_widget(self, *args):
+    def _redraw_widget(self, *args):
         """ Method of redraw this widget """
         # Editting a height of number label in this row
         for num, line in enumerate(self.parent.cells):
@@ -454,8 +475,8 @@ class NullLabel(Button):
 
     def __init__(self, **kwargs):
         super(NullLabel, self).__init__(**kwargs)
-        self.bind(pos=self.redraw_widget)
-        self.bind(size=self.redraw_widget)
+        # self.bind(pos=self._redraw_widget)
+        self.bind(size=self._redraw_widget)
         self.bind(on_press = self.on_press_button)
         self._bkcolor = [.2, .2, .2, 1]
 
@@ -466,7 +487,7 @@ class NullLabel(Button):
     @bkcolor.setter
     def bkcolor(self, color):
         self._bkcolor = color
-        self.redraw_widget()
+        self._redraw_widget()
 
     def on_press_button(self, touch=None):
         """ On press method for current object """
@@ -474,7 +495,7 @@ class NullLabel(Button):
         self.state = 'normal'
         print 'pressed on null label'
 
-    def redraw_widget(self, *args):
+    def _redraw_widget(self, *args):
         """ Method of redraw this widget """
         with self.canvas.before:
             self.canvas.before.clear()
