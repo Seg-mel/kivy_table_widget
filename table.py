@@ -24,7 +24,7 @@ class Table(BoxLayout):
     def __init__(self):
         super(Table, self).__init__()
         self._cols = 0
-        self._choosen_row = 0
+        self._chosen_row = 0
         # Getting the LabelPanel object for working with it
         self._label_panel = self.children[1]
         # Getting the GridTable object for working with it
@@ -111,29 +111,49 @@ class Table(BoxLayout):
             self._grid._cells.append(row_widget_list)
             self.number_panel.add_widget(NewNumberLabel(
                                                text=str(self.row_count)))
+            # Default the choosing
+            if len(self.grid.cells) == 1:
+                self.choose_row(0)
         else:
             print 'ERROR: Please, add %s strings in method\'s arguments' %\
                                                               str(self._cols)
 
     def del_row(self, number):
         """ Delete a row by number """
-        for cell in self.grid.cells[number]:
-            self.grid.remove_widget(cell)
-        del self.grid.cells[number]
-        self.number_panel.remove_widget(self.number_panel.children[0])
+        if len(self.grid.cells) > number:
+            for cell in self.grid.cells[number]:
+                self.grid.remove_widget(cell)
+            del self.grid.cells[number]
+            self.number_panel.remove_widget(self.number_panel.children[0])
+            # If was deleted the chosen row
+            if self._chosen_row == number:
+                self.choose_row(number)
+        else:
+            print 'ERROR: Nothing to delete...'
 
     def choose_row(self, row_num=0):
         """ 
         Choose a row in our table.
         Example: choose_row(1)
         """
-        if len(self.grid.children) > 0:
+        if len(self.grid.cells) > row_num:
             for col_num in range(self._cols):
-                old_grid_element = self.grid.cells[self._choosen_row][col_num]
+                old_grid_element = self.grid.cells[self._chosen_row][col_num]
                 current_cell = self.grid.cells[row_num][col_num]
-                old_grid_element._background_color(old_grid_element.color_widget)
+                old_grid_element._background_color(
+                                                 old_grid_element.color_widget)
                 current_cell._background_color(current_cell.color_click)
-            self._choosen_row = row_num
+            self._chosen_row = row_num
+        elif len(self.grid.cells) == 0:
+            print 'ERROR: Nothing to choose...'
+        else:
+            for col_num in range(self._cols):
+                old_grid_element = self.grid.cells[self._chosen_row][col_num]
+                current_cell = self.grid.cells[-1][col_num]
+                old_grid_element._background_color(
+                                                 old_grid_element.color_widget)
+                current_cell._background_color(current_cell.color_click)
+            self._chosen_row = row_num
 
     def redraw_widget(self, *args):
         """ Method of redraw this widget """
@@ -170,7 +190,7 @@ class ScrollViewTable(ScrollView):
             Rectangle(pos=self.pos, size=self.size)
         # Editting the number panel width
         number_panel = self.children[0].children[1]
-        if number_panel.auto_width:
+        if number_panel.auto_width and len(number_panel.children) > 0:
             last_number_label = self.children[0].children[1].children[0]
             number_panel.width_widget = last_number_label.texture_size[0] + 10
 
@@ -344,7 +364,7 @@ class GridTable(GridLayout):
             if item_object == child:
                 columns = self.parent.parent.parent._cols
                 row_index = index/columns
-                print str(row_index), 'row is choosen'
+                print str(row_index), 'row is chosen'
                 return row_index
                 break
 
@@ -425,7 +445,7 @@ class NewLabel(Button):
     def on_press_button(self, touch=None):
         """ On press method for current object """
         self.state = 'normal'
-        print 'pressed on label label'
+        print 'pressed on name label'
 
 
 
