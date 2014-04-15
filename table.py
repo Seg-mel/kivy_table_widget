@@ -166,13 +166,12 @@ class Table(BoxLayout):
 
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
         """ Method of pressing keyboard  """
-        print keycode
         if keycode[0] == 273:   # UP
             print keycode
-            self.scroll_view._up()
+            self.scroll_view.up()
         if keycode[0] == 274:   # DOWN
             print keycode
-            self.scroll_view._down()
+            self.scroll_view.down()
         if keycode[0] == 281:   # PageDown
             print keycode
         if keycode[0] == 280:   # PageUp
@@ -190,7 +189,6 @@ class ScrollViewTable(ScrollView):
     """ScrollView for grid table"""
     def __init__(self, **kwargs):
         super(ScrollViewTable, self).__init__(**kwargs)
-        # self.bind(pos=self._redraw_widget)
         self.bind(size=self._redraw_widget)
         self._bkcolor = [.2, .2, .2, 1]
         # Start scroll_y pisition
@@ -208,19 +206,9 @@ class ScrollViewTable(ScrollView):
             Color(*self._bkcolor)
         self._redraw_widget()
 
-    def _redraw_widget(self, *args):
-        """ Method of redraw this widget """
-        with self.canvas.before:
-            Rectangle(pos=self.pos, size=self.size)
-        # Editting the number panel width
-        number_panel = self.children[0].children[1]
-        if number_panel.auto_width and len(number_panel.children) > 0:
-            last_number_label = self.children[0].children[1].children[0]
-            number_panel.width_widget = last_number_label.texture_size[0] + 10
-
-    def _up(self):
+    def up(self):
         """ Scrolling up when the chosen row is out of view """
-        if self.size != [100.0, 100.0]:
+        if self.size != [100.0, 100.0] and (self.parent.row_count != 0):
             if self.parent._chosen_row > 0:
                 # Choosing the next row
                 self.parent.choose_row(self.parent._chosen_row - 1)
@@ -234,7 +222,7 @@ class ScrollViewTable(ScrollView):
             # The height of current cell
             cur_cell_height = float(cur_cell.height)
             # The Y position of current cell
-            cur_row_y = cur_cell.y
+            cur_row_y = float(cur_cell.y)
             # The convert scroll Y position
             _scroll_y = self.scroll_y * scroll_height + self.height - \
                                                         cur_cell_height
@@ -258,9 +246,9 @@ class ScrollViewTable(ScrollView):
                 self.scroll_y = 1
                 self.update_from_scroll()
 
-    def _down(self):
+    def down(self):
         """ Scrolling down when the chosen row is out of view """
-        if self.size != [100.0, 100.0]:
+        if self.size != [100.0, 100.0] and (self.parent.row_count != 0):
             if self.parent._chosen_row < (self.parent.row_count - 1):
                 # Choosing the next row
                 self.parent.choose_row(self.parent._chosen_row + 1)
@@ -274,7 +262,7 @@ class ScrollViewTable(ScrollView):
             # The height of current cell
             cur_cell_height = float(cur_cell.height)
             # The Y position of current cell
-            cur_row_y = cur_cell.y
+            cur_row_y = float(cur_cell.y)
             # The convert scroll Y position
             _scroll_y = self.scroll_y * scroll_height
             # Jump to the chosen row
@@ -299,13 +287,33 @@ class ScrollViewTable(ScrollView):
 
     def home(self):
         """ Scrolling to the top of the table """
-        self.scroll_y = 1
-        self.parent.choose_row(0)
+        if (self.parent.row_count != 0):
+            self.scroll_y = 1
+            self.parent.choose_row(0)
 
     def end(self):
         """ Scrolling to the bottom of the table """
-        self.scroll_y = 0
-        self.parent.choose_row(self.parent.row_count - 1)
+        if (self.parent.row_count != 0):
+            self.scroll_y = 0
+            self.parent.choose_row(self.parent.row_count - 1)
+
+    def pgup(self, row_count=10):
+        if (self.parent.row_count != 0):
+            pass
+
+    def pgdn(self, row_count=10):
+        if (self.parent.row_count != 0):
+            pass
+
+    def _redraw_widget(self, *args):
+        """ Method of redraw this widget """
+        with self.canvas.before:
+            Rectangle(pos=self.pos, size=self.size)
+        # Editting the number panel width
+        number_panel = self.children[0].children[1]
+        if number_panel.auto_width and len(number_panel.children) > 0:
+            last_number_label = self.children[0].children[1].children[0]
+            number_panel.width_widget = last_number_label.texture_size[0] + 10
 
 
 
@@ -321,7 +329,6 @@ class LabelPanel(BoxLayout):
     """Panel for column labels"""
     def __init__(self, **kwargs):
         super(LabelPanel, self).__init__(**kwargs)
-        # self.bind(pos=self._redraw_widget)
         self.bind(size=self._redraw_widget)
         self._visible = True
         self._height = 30
@@ -374,7 +381,6 @@ class NumberPanel(BoxLayout):
     """Num panel class"""
     def __init__(self, **kwargs):
         super(NumberPanel, self).__init__(**kwargs)
-        # self.bind(pos=self._redraw_widget)
         self.bind(size=self._redraw_widget)
         self._visible = True
         self._width = 30
@@ -442,7 +448,6 @@ class GridTable(GridLayout):
     """This is the table itself"""
     def __init__(self, **kwargs):
         super(GridTable, self).__init__(**kwargs)
-        # self.bind(pos=self._redraw_widget)
         self.bind(size=self._redraw_widget)
         self.bind(minimum_height=self.setter('height'))
         self._bkcolor = [.2, .2, .2, 1]
@@ -496,7 +501,6 @@ class NewCell(object):
 
     def __init__(self, **kwargs):
         super(NewCell, self).__init__(**kwargs)
-        # self.bind(pos=self._redraw_widget)
         self.bind(size=self._redraw_widget)
         # Binds for click on this cell
         self.bind(on_press = self.on_press_button)
@@ -567,7 +571,6 @@ class NullLabel(Button):
 
     def __init__(self, **kwargs):
         super(NullLabel, self).__init__(**kwargs)
-        # self.bind(pos=self._redraw_widget)
         self.bind(size=self._redraw_widget)
         self.bind(on_press = self.on_press_button)
         self._bkcolor = [.2, .2, .2, 1]

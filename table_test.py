@@ -25,7 +25,7 @@ class MainScreen(BoxLayout):
         self.my_table = Table()
         self.add_widget(self.my_table)
         self.my_table.cols = 2
-        for i in range(100):
+        for i in range(500):
             # self.my_table.add_button_row('123','456'+str(i))
             self.my_table.add_row([Button, {'text':'button%s'%i,
                                             'color_widget': [0,0,0.5,1],
@@ -40,11 +40,11 @@ class MainScreen(BoxLayout):
         self.my_table.choose_row(3)
         print "ROW COUNT:", self.my_table.row_count
         self.my_table.del_row(5)
-        self.my_table.grid.bkcolor = [1, 0, 0, 1]
-        self.my_table.label_panel.bkcolor = [0, 1, 0, 1]
-        self.my_table.number_panel.bkcolor = [0, 0, 1, 1]
-        self.my_table.scroll_view.bar_width = 10
-        # self.my_table.scroll_view.scroll_type = ['bars']
+        # self.my_table.grid.bkcolor = [1, 0, 0, 1]
+        # self.my_table.label_panel.bkcolor = [0, 1, 0, 1]
+        # self.my_table.number_panel.bkcolor = [0, 0, 1, 1]
+        # self.my_table.scroll_view.bar_width = 10
+        self.my_table.scroll_view.scroll_type = ['bars']
         self.my_table.grid.cells[0][0].text = 'edited button text'
         self.my_table.grid.cells[1][1].text = 'edited textinput text'
         self.my_table.grid.cells[20][1].height = 50
@@ -52,12 +52,10 @@ class MainScreen(BoxLayout):
         self.my_table.grid.cells[5][1].height = 100
         self.my_table.grid.cells[3][0].height = 100
     #     Clock.schedule_interval(self.clock_callback, 0.2)
-    #     self.num = 1
 
     # def clock_callback(self, dt):
     #     ''' Kivy clock method '''
-    #     self.my_table.scroll_view.down(self.num)
-    #     self.num += 1
+    #     pass
 
 
 
