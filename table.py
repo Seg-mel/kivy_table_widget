@@ -4,13 +4,13 @@
 import kivy
 from kivy.lang import Builder
 from kivy.graphics import Color, Rectangle
+from kivy.core.window import Window
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.properties import ListProperty, BooleanProperty
-from kivy.effects.kinetic import KineticEffect
 
 
 
@@ -23,6 +23,8 @@ class Table(BoxLayout):
 
     def __init__(self):
         super(Table, self).__init__()
+        self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
+        self._keyboard.bind(on_key_down=self._on_keyboard_down)
         self._cols = 0
         self._chosen_row = 0
         # Getting the LabelPanel object for working with it
@@ -159,6 +161,29 @@ class Table(BoxLayout):
                 current_cell._background_color(current_cell.color_click)
             self._chosen_row = row_num
 
+    def _keyboard_closed(self):
+        pass
+
+    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        """ Method of pressing keyboard  """
+        print keycode
+        if keycode[0] == 273:   # UP
+            print keycode
+            self.scroll_view._up()
+        if keycode[0] == 274:   # DOWN
+            print keycode
+            self.scroll_view._down()
+        if keycode[0] == 281:   # PageDown
+            print keycode
+        if keycode[0] == 280:   # PageUp
+            print keycode
+        if keycode[0] == 278:   # Home
+            print keycode
+            self.scroll_view.home()
+        if keycode[0] == 279:   # End
+            print keycode
+            self.scroll_view.end()
+
 
 
 class ScrollViewTable(ScrollView):
@@ -193,27 +218,94 @@ class ScrollViewTable(ScrollView):
             last_number_label = self.children[0].children[1].children[0]
             number_panel.width_widget = last_number_label.texture_size[0] + 10
 
-    def down(self, row_num):
-        count_end_window = (float(self.parent.height) - \
-                                            self.parent.children[1].height) / \
-                float(self.children[0].children[0].children[-row_num].height)
-        print count_end_window
-        count_row = float(len(self.children[0].children[0].cells))
-        print count_row
-        if self.scroll_y > 0:
-            self.scroll_y = 1. - 1. * float(row_num) / \
-                                                 (count_row - count_end_window)
-        if self.scroll_y < 0:
-            self.scroll_y = 0
-        self.update_from_scroll()
+    def _up(self):
+        """ Scrolling up when the chosen row is out of view """
+        if self.size != [100.0, 100.0]:
+            if self.parent._chosen_row > 0:
+                # Choosing the next row
+                self.parent.choose_row(self.parent._chosen_row - 1)
+            # The grid height
+            grid_height = float(self.children[0].height)
+            # The scroll height
+            scroll_height = float(grid_height - self.height)
+            # The current cell
+            cur_cell = self.children[0].children[0].\
+                       cells[self.parent._chosen_row][0]
+            # The height of current cell
+            cur_cell_height = float(cur_cell.height)
+            # The Y position of current cell
+            cur_row_y = cur_cell.y
+            # The convert scroll Y position
+            _scroll_y = self.scroll_y * scroll_height + self.height - \
+                                                        cur_cell_height
+            # Jump to the chosen row
+            top_scroll_excess = cur_row_y - cur_cell_height
+            down_scroll_excess = cur_row_y + self.height - cur_cell_height
+            if _scroll_y > down_scroll_excess or _scroll_y < top_scroll_excess:
+                new_scroll_y = 0 + \
+                          1*((cur_row_y-self.height/2)/100)/(scroll_height/100)
+                if new_scroll_y < 0:
+                    self.scroll_y = 0
+                else:
+                    self.scroll_y = new_scroll_y
+            # Scrolling to follows the current row
+            if (cur_row_y) > _scroll_y:
+                self.scroll_y = self.scroll_y + \
+                                    1*(cur_cell_height/100)/(scroll_height/100)
+                self.update_from_scroll()
+            # Stopping the scrolling when start of grid
+            if self.scroll_y > 1:
+                self.scroll_y = 1
+                self.update_from_scroll()
+
+    def _down(self):
+        """ Scrolling down when the chosen row is out of view """
+        if self.size != [100.0, 100.0]:
+            if self.parent._chosen_row < (self.parent.row_count - 1):
+                # Choosing the next row
+                self.parent.choose_row(self.parent._chosen_row + 1)
+            # The grid height
+            grid_height = float(self.children[0].height)
+            # The scroll height
+            scroll_height = float(grid_height - self.height)
+            # The current cell
+            cur_cell = self.children[0].children[0].\
+                       cells[self.parent._chosen_row][0]
+            # The height of current cell
+            cur_cell_height = float(cur_cell.height)
+            # The Y position of current cell
+            cur_row_y = cur_cell.y
+            # The convert scroll Y position
+            _scroll_y = self.scroll_y * scroll_height
+            # Jump to the chosen row
+            top_scroll_excess = cur_row_y - self.height + cur_cell_height
+            down_scroll_excess = cur_row_y + cur_cell_height
+            if _scroll_y < top_scroll_excess or _scroll_y > down_scroll_excess:
+                new_scroll_y = 0 + \
+                          1*((cur_row_y-self.height/2)/100)/(scroll_height/100)
+                if new_scroll_y > 1:
+                    self.scroll_y = 1
+                else:
+                    self.scroll_y = new_scroll_y
+            # Scrolling to follows the current row
+            if cur_row_y < _scroll_y:
+                self.scroll_y = self.scroll_y - \
+                                    1*(cur_cell_height/100)/(scroll_height/100)
+                self.update_from_scroll()
+            # Stopping the scrolling when end of grid
+            if self.scroll_y < 0:
+                self.scroll_y = 0
+                self.update_from_scroll()
 
     def home(self):
         """ Scrolling to the top of the table """
         self.scroll_y = 1
+        self.parent.choose_row(0)
 
     def end(self):
         """ Scrolling to the bottom of the table """
         self.scroll_y = 0
+        self.parent.choose_row(self.parent.row_count - 1)
 
 
 

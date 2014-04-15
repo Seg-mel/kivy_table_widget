@@ -43,19 +43,21 @@ class MainScreen(BoxLayout):
         self.my_table.grid.bkcolor = [1, 0, 0, 1]
         self.my_table.label_panel.bkcolor = [0, 1, 0, 1]
         self.my_table.number_panel.bkcolor = [0, 0, 1, 1]
-        self.my_table.scroll_view.bar_width = 20
+        self.my_table.scroll_view.bar_width = 10
         # self.my_table.scroll_view.scroll_type = ['bars']
         self.my_table.grid.cells[0][0].text = 'edited button text'
         self.my_table.grid.cells[1][1].text = 'edited textinput text'
-        # self.my_table.grid.cells[1][1].height = 50
-        # self.my_table.grid.cells[3][0].height = 100
-        Clock.schedule_interval(self.clock_callback, 0.2)
-        self.num = 1
+        self.my_table.grid.cells[20][1].height = 50
+        self.my_table.grid.cells[30][1].height = 100
+        self.my_table.grid.cells[5][1].height = 100
+        self.my_table.grid.cells[3][0].height = 100
+    #     Clock.schedule_interval(self.clock_callback, 0.2)
+    #     self.num = 1
 
-    def clock_callback(self, dt):
-        ''' Kivy clock method '''
-        self.my_table.scroll_view.down(self.num)
-        self.num += 1
+    # def clock_callback(self, dt):
+    #     ''' Kivy clock method '''
+    #     self.my_table.scroll_view.down(self.num)
+    #     self.num += 1
 
 
 
