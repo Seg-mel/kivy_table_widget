@@ -174,8 +174,10 @@ class Table(BoxLayout):
             self.scroll_view.down()
         if keycode[0] == 281:   # PageDown
             print keycode
+            self.scroll_view.pgdn()
         if keycode[0] == 280:   # PageUp
             print keycode
+            self.scroll_view.pgup()
         if keycode[0] == 278:   # Home
             print keycode
             self.scroll_view.home()
@@ -206,11 +208,12 @@ class ScrollViewTable(ScrollView):
             Color(*self._bkcolor)
         self._redraw_widget()
 
-    def up(self):
+    def up(self, row_num=1):
         """ Scrolling up when the chosen row is out of view """
         if self.size != [100.0, 100.0] and (self.parent.row_count != 0):
-            if self.parent._chosen_row > 0:
-                self.parent.choose_row(self.parent._chosen_row - 1)
+            if self.parent._chosen_row - row_num > 0:
+                self.parent.choose_row(self.parent._chosen_row - row_num)
+            else: self.parent.choose_row(0)
             grid_height = float(self.children[0].height)
             scroll_height = float(grid_height - self.height)
             cur_cell = self.children[0].children[0].\
@@ -239,11 +242,12 @@ class ScrollViewTable(ScrollView):
                 self.scroll_y = 1
             self._update_mouse(self.effect_y, self.scroll_y)
 
-    def down(self):
+    def down(self, row_num=1):
         """ Scrolling down when the chosen row is out of view """
         if self.size != [100.0, 100.0] and (self.parent.row_count != 0):
-            if self.parent._chosen_row < (self.parent.row_count - 1):
-                self.parent.choose_row(self.parent._chosen_row + 1)
+            if self.parent._chosen_row + row_num < self.parent.row_count - 1:
+                self.parent.choose_row(self.parent._chosen_row + row_num)
+            else: self.parent.choose_row(self.parent.row_count-1)
             grid_height = float(self.children[0].height)
             scroll_height = float(grid_height - self.height)
             cur_cell = self.children[0].children[0].\
@@ -288,11 +292,11 @@ class ScrollViewTable(ScrollView):
 
     def pgup(self, row_count=10):
         if (self.parent.row_count != 0):
-            pass
+            self.up(row_count)
 
     def pgdn(self, row_count=10):
         if (self.parent.row_count != 0):
-            pass
+            self.down(row_count)
 
     def _update_mouse(self, event, value):
         """ Updating the mouse position """
