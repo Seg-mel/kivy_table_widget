@@ -10,7 +10,6 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.button import Button
 from kivy.uix.label import Label
-from kivy.properties import ListProperty, BooleanProperty
 
 
 
@@ -305,6 +304,9 @@ class ScrollViewTable(ScrollView):
 
     def _redraw_widget(self, *args):
         """ Method of redraw this widget """
+        print self.size
+        if self.size != ([0,0] or [100.0,100.0]):
+            print 'JAJA'
         with self.canvas.before:
             Rectangle(pos=self.pos, size=self.size)
         # Editting the number panel width
@@ -331,6 +333,11 @@ class LabelPanel(BoxLayout):
         self._visible = True
         self._height = 30
         self._bkcolor = [.2, .2, .2, 1]
+
+    @property
+    def labels(self):
+        """ List of label objects """
+        return [child for child in reversed(self.children)][1:]
 
     @property
     def bkcolor(self):
@@ -426,7 +433,6 @@ class NumberPanel(BoxLayout):
         return self._width
     @width_widget.setter
     def width_widget(self, width):
-        # Get null label object
         null_label = self.parent.parent.parent.label_panel.children[-1]
         if self._visible == True:
             self._width = width
@@ -486,11 +492,15 @@ class GridTable(GridLayout):
 
     def _redraw_widget(self, *args):
         """ Method of redraw this widget """
-        with self.canvas.before:
-            self.canvas.before.clear()
-            Color(*self._bkcolor)
-            Rectangle(pos=self.pos, size=self.size)
+        # with self.canvas.before:
+        #     self.canvas.before.clear()
+        #     Color(0,0,0,0)
+            # Rectangle(pos=self.pos, size=self.size)
         self.parent.parent.bkcolor = self._bkcolor
+        # Hide the grid view and the number panel if the grid view is empty
+        if len(self.children) == 0:
+            self.height = .01
+            self.parent.children[-1].height = .01
 
 
 
@@ -500,7 +510,6 @@ class NewCell(object):
     def __init__(self, **kwargs):
         super(NewCell, self).__init__(**kwargs)
         self.bind(size=self._redraw_widget)
-        # Binds for click on this cell
         self.bind(on_press = self.on_press_button)
         try:
             self.bind(focus=self.on_press_button)
@@ -547,7 +556,9 @@ class NewCell(object):
                 if cell == self:
                     self.parent.parent.children[1].children[-(num+1)].height =\
                                                                     self.height
+                    # print 'JAJA', num
                     break
+                break
 
 
 
@@ -559,6 +570,7 @@ class NewLabel(Button):
 
     def on_press_button(self, touch=None):
         """ On press method for current object """
+        # Disable a click
         self.state = 'normal'
         print 'pressed on name label'
 
@@ -584,7 +596,7 @@ class NullLabel(Button):
 
     def on_press_button(self, touch=None):
         """ On press method for current object """
-        # Disable click
+        # Disable a click
         self.state = 'normal'
         print 'pressed on null label'
 
