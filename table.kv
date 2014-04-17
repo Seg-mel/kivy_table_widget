@@ -1,3 +1,6 @@
+# Table style file
+# Copyright (C) 2014 Musikhin Andrey <melomansegfault@gmail.com>
+
 #:kivy 1.0
 
 #:import get_color_from_hex kivy.utils.get_color_from_hex
@@ -56,18 +59,22 @@
     valign: 'middle'
     halign: 'center'
     max_lines: 1
-    text_size: (self.width, self.height)
+    # text_size: (self.width, self.height)
+    background_color: [.5,.5,.5,1]
+
 
 <NullLabel>:
     width: 30
     size_hint: None, 1
+    background_color: [.5,.5,.5,1]
 
 <NewNumberLabel>:
     size_hint: 1, None
     font_size: 14
     # font_name: 'Terminus'
     valign: 'middle'
-    # halign: 'center'
+    halign: 'center'
+    background_color: [.5,.5,.5,1]
     # max_lines: 1
     # text_size: (self.width, self.height)
 

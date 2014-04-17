@@ -1,6 +1,9 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
+# Table module
+# Copyright (C) 2014 Musikhin Andrey <melomansegfault@gmail.com>
+
 import kivy
 from kivy.lang import Builder
 from kivy.graphics import Color, Rectangle
@@ -304,9 +307,6 @@ class ScrollViewTable(ScrollView):
 
     def _redraw_widget(self, *args):
         """ Method of redraw this widget """
-        print self.size
-        if self.size != ([0,0] or [100.0,100.0]):
-            print 'JAJA'
         with self.canvas.before:
             Rectangle(pos=self.pos, size=self.size)
         # Editting the number panel width
@@ -492,10 +492,6 @@ class GridTable(GridLayout):
 
     def _redraw_widget(self, *args):
         """ Method of redraw this widget """
-        # with self.canvas.before:
-        #     self.canvas.before.clear()
-        #     Color(0,0,0,0)
-            # Rectangle(pos=self.pos, size=self.size)
         self.parent.parent.bkcolor = self._bkcolor
         # Hide the grid view and the number panel if the grid view is empty
         if len(self.children) == 0:
@@ -515,7 +511,7 @@ class NewCell(object):
             self.bind(focus=self.on_press_button)
         except: pass
         self._color_widget = [1, 1, 1, 1]
-        self._color_click = [.1, .1, .1, 1]
+        self._color_click = [.3, .3, .3, 1]
 
     def _background_color(self, value):
         """ Set the background color """
@@ -556,7 +552,6 @@ class NewCell(object):
                 if cell == self:
                     self.parent.parent.children[1].children[-(num+1)].height =\
                                                                     self.height
-                    # print 'JAJA', num
                     break
                 break
 
