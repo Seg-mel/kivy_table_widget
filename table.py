@@ -210,18 +210,12 @@ class ScrollViewTable(ScrollView):
         """ Scrolling up when the chosen row is out of view """
         if self.size != [100.0, 100.0] and (self.parent.row_count != 0):
             if self.parent._chosen_row > 0:
-                # Choosing the next row
                 self.parent.choose_row(self.parent._chosen_row - 1)
-            # The grid height
             grid_height = float(self.children[0].height)
-            # The scroll height
             scroll_height = float(grid_height - self.height)
-            # The current cell
             cur_cell = self.children[0].children[0].\
                        cells[self.parent._chosen_row][0]
-            # The height of current cell
             cur_cell_height = float(cur_cell.height)
-            # The Y position of current cell
             cur_row_y = float(cur_cell.y)
             # The convert scroll Y position
             _scroll_y = self.scroll_y * scroll_height + self.height - \
@@ -240,28 +234,21 @@ class ScrollViewTable(ScrollView):
             if (cur_row_y) > _scroll_y:
                 self.scroll_y = self.scroll_y + \
                                     1*(cur_cell_height/100)/(scroll_height/100)
-                self.update_from_scroll()
             # Stopping the scrolling when start of grid
             if self.scroll_y > 1:
                 self.scroll_y = 1
-                self.update_from_scroll()
+            self._update_mouse(self.effect_y, self.scroll_y)
 
     def down(self):
         """ Scrolling down when the chosen row is out of view """
         if self.size != [100.0, 100.0] and (self.parent.row_count != 0):
             if self.parent._chosen_row < (self.parent.row_count - 1):
-                # Choosing the next row
                 self.parent.choose_row(self.parent._chosen_row + 1)
-            # The grid height
             grid_height = float(self.children[0].height)
-            # The scroll height
             scroll_height = float(grid_height - self.height)
-            # The current cell
             cur_cell = self.children[0].children[0].\
                        cells[self.parent._chosen_row][0]
-            # The height of current cell
             cur_cell_height = float(cur_cell.height)
-            # The Y position of current cell
             cur_row_y = float(cur_cell.y)
             # The convert scroll Y position
             _scroll_y = self.scroll_y * scroll_height
@@ -279,23 +266,25 @@ class ScrollViewTable(ScrollView):
             if cur_row_y < _scroll_y:
                 self.scroll_y = self.scroll_y - \
                                     1*(cur_cell_height/100)/(scroll_height/100)
-                self.update_from_scroll()
             # Stopping the scrolling when end of grid
             if self.scroll_y < 0:
                 self.scroll_y = 0
-                self.update_from_scroll()
+            self._update_mouse(self.effect_y, self.scroll_y)
+
 
     def home(self):
         """ Scrolling to the top of the table """
         if (self.parent.row_count != 0):
             self.scroll_y = 1
             self.parent.choose_row(0)
+            self._update_mouse(self.effect_y, self.scroll_y)
 
     def end(self):
         """ Scrolling to the bottom of the table """
         if (self.parent.row_count != 0):
             self.scroll_y = 0
             self.parent.choose_row(self.parent.row_count - 1)
+            self._update_mouse(self.effect_y, self.scroll_y)
 
     def pgup(self, row_count=10):
         if (self.parent.row_count != 0):
@@ -304,6 +293,11 @@ class ScrollViewTable(ScrollView):
     def pgdn(self, row_count=10):
         if (self.parent.row_count != 0):
             pass
+
+    def _update_mouse(self, event, value):
+        """ Updating the mouse position """
+        if event:
+            event.value = (event.max + event.min) * value
 
     def _redraw_widget(self, *args):
         """ Method of redraw this widget """

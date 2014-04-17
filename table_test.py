@@ -25,7 +25,7 @@ class MainScreen(BoxLayout):
         self.my_table = Table()
         self.add_widget(self.my_table)
         self.my_table.cols = 2
-        for i in range(500):
+        for i in range(100):
             # self.my_table.add_button_row('123','456'+str(i))
             self.my_table.add_row([Button, {'text':'button%s'%i,
                                             'color_widget': [0,0,0.5,1],
@@ -38,7 +38,7 @@ class MainScreen(BoxLayout):
         # self.my_table.number_panel.width_widget = 100
         # self.my_table.number_panel.visible = False
         self.my_table.choose_row(3)
-        print "ROW COUNT:", self.my_table.row_count
+        print("ROW COUNT:", self.my_table.row_count)
         self.my_table.del_row(5)
         # self.my_table.grid.bkcolor = [1, 0, 0, 1]
         # self.my_table.label_panel.bkcolor = [0, 1, 0, 1]
