@@ -253,24 +253,24 @@ class ScrollViewTable(ScrollView):
 
     def home(self):
         """ Scrolling to the top of the table """
-        if (self.parent.row_count != 0):
+        if self.parent.row_count != 0:
             self.scroll_y = 1
             self.parent.choose_row(0)
             self._update_mouse(self.effect_y, self.scroll_y)
 
     def end(self):
         """ Scrolling to the bottom of the table """
-        if (self.parent.row_count != 0):
+        if self.parent.row_count != 0:
             self.scroll_y = 0
             self.parent.choose_row(self.parent.row_count - 1)
             self._update_mouse(self.effect_y, self.scroll_y)
 
     def pgup(self, row_count=10):
-        if (self.parent.row_count != 0):
+        if self.parent.row_count != 0:
             self.up(row_count)
 
     def pgdn(self, row_count=10):
-        if (self.parent.row_count != 0):
+        if self.parent.row_count != 0:
             self.down(row_count)
 
     def _update_mouse(self, event, value):
