@@ -37,9 +37,9 @@ class MainScreen(BoxLayout):
         self.my_table.number_panel.visible = False
         self.my_table.choose_row(3)
         self.my_table.del_row(5)
-        self.my_table.grid.bkcolor = [1, 0, 0, 1]
-        self.my_table.label_panel.bkcolor = [0, 1, 0, 1]
-        self.my_table.number_panel.bkcolor = [0, 0, 1, 1]
+        self.my_table.grid.color = [1, 0, 0, 1]
+        self.my_table.label_panel.color = [0, 1, 0, 1]
+        self.my_table.number_panel.color = [0, 0, 1, 1]
         self.my_table.scroll_view.bar_width = 10
         self.my_table.scroll_view.scroll_type = ['bars']
         self.my_table.grid.cells[0][0].text = 'edited button text'

@@ -20,7 +20,7 @@ my_table.add_row([Button, {'text':'button2',
                               }])
 my_table.choose_row(3)
 my_table.del_row(5)
-my_table.grid.bkcolor = [1, 0, 0, 1]
+my_table.grid.color = [1, 0, 0, 1]
 my_table.grid.cells[1][1].text = 'edited textinput text'
 my_table.grid.cells[3][0].height = 100
 my_table.label_panel.labels[0].text = 'New name'
