@@ -48,7 +48,7 @@ class MainScreen(BoxLayout):
         self.my_table.grid.cells[0][0].text = 'edited button text'
         self.my_table.grid.cells[1][1].text = 'edited textinput text'
         self.my_table.grid.cells[3][0].height = 100
-        self.my_table.label_panel.labels[0].text = 'New name'
+        self.my_table.label_panel.labels[1].text = 'New name'
         print "ROW COUNT:", self.my_table.row_count
         self.add_widget(self.my_table)
 

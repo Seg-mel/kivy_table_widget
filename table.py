@@ -266,10 +266,14 @@ class ScrollViewTable(ScrollView):
             self._update_mouse(self.effect_y, self.scroll_y)
 
     def pgup(self, row_count=10):
+        """ Scrolling up when the chosen row is out of view, but with step """
         if self.parent.row_count != 0:
             self.up(row_count)
 
     def pgdn(self, row_count=10):
+        """ 
+        Scrolling down when the chosen row is out of view, but with step 
+        """
         if self.parent.row_count != 0:
             self.down(row_count)
 
@@ -310,7 +314,7 @@ class LabelPanel(BoxLayout):
     @property
     def labels(self):
         """ List of label objects """
-        return [child for child in reversed(self.children)][1:]
+        return [child for child in reversed(self.children)]
 
     @property
     def color(self):
@@ -323,7 +327,7 @@ class LabelPanel(BoxLayout):
 
     @property
     def visible(self):
-        """ Get/set panel visible """
+        """ Get/set panel visibility """
         return self._visible
     @visible.setter
     def visible(self, visible=True):
@@ -372,7 +376,6 @@ class NumberPanel(BoxLayout):
     @auto_width.setter
     def auto_width(self, value):
         self._auto_width = value
-    
 
     @property
     def color(self):
