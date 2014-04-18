@@ -8,6 +8,7 @@ import kivy
 from kivy.config import Config
 Config.set("input", "mouse", "mouse, disable_multitouch")
 from kivy.app import App
+from kivy.core.window import Window
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
@@ -19,6 +20,8 @@ class MainScreen(BoxLayout):
     """docstring for MainScreen"""
     def __init__(self):
         super(MainScreen, self).__init__()
+        self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
+        self._keyboard.bind(on_key_down=self._on_keyboard_down)
         self.my_table = Table()
         self.my_table.cols = 2
         self.my_table.add_button_row('123','456')
@@ -48,6 +51,30 @@ class MainScreen(BoxLayout):
         self.my_table.label_panel.labels[0].text = 'New name'
         print "ROW COUNT:", self.my_table.row_count
         self.add_widget(self.my_table)
+
+    def _keyboard_closed(self):
+        pass
+
+    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        """ Method of pressing keyboard  """
+        if keycode[0] == 273:   # UP
+            print keycode
+            self.my_table.scroll_view.up()
+        if keycode[0] == 274:   # DOWN
+            print keycode
+            self.my_table.scroll_view.down()
+        if keycode[0] == 281:   # PageDown
+            print keycode
+            self.my_table.scroll_view.pgdn()
+        if keycode[0] == 280:   # PageUp
+            print keycode
+            self.my_table.scroll_view.pgup()
+        if keycode[0] == 278:   # Home
+            print keycode
+            self.my_table.scroll_view.home()
+        if keycode[0] == 279:   # End
+            print keycode
+            self.my_table.scroll_view.end()
 
 
 

@@ -7,7 +7,6 @@
 import kivy
 from kivy.lang import Builder
 from kivy.graphics import Color, Rectangle
-from kivy.core.window import Window
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.scrollview import ScrollView
@@ -25,8 +24,6 @@ class Table(BoxLayout):
 
     def __init__(self):
         super(Table, self).__init__()
-        self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
-        self._keyboard.bind(on_key_down=self._on_keyboard_down)
         self._cols = 0
         self._chosen_row = 0
         # Getting the LabelPanel object for working with it
@@ -162,30 +159,6 @@ class Table(BoxLayout):
                                                  old_grid_element.color_widget)
                 current_cell._background_color(current_cell.color_click)
             self._chosen_row = row_num
-
-    def _keyboard_closed(self):
-        pass
-
-    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
-        """ Method of pressing keyboard  """
-        if keycode[0] == 273:   # UP
-            print keycode
-            self.scroll_view.up()
-        if keycode[0] == 274:   # DOWN
-            print keycode
-            self.scroll_view.down()
-        if keycode[0] == 281:   # PageDown
-            print keycode
-            self.scroll_view.pgdn()
-        if keycode[0] == 280:   # PageUp
-            print keycode
-            self.scroll_view.pgup()
-        if keycode[0] == 278:   # Home
-            print keycode
-            self.scroll_view.home()
-        if keycode[0] == 279:   # End
-            print keycode
-            self.scroll_view.end()
 
 
 

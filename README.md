@@ -6,7 +6,7 @@ Kivy Table widget v1
 Short example:
 ``` Python
 ...
-from table import Table
+from kivy_table_widget import Table
 ...
 my_table = Table()
 my_table.cols = 2
