@@ -29,11 +29,11 @@ my_table.label_panel.labels[0].text = 'New name'
 
 Standart widget
 
-<img src="" width='451px;'/>
+<img src="https://raw.githubusercontent.com/Seg-mel/kivy_table_widget/master/images/standard.png" width='600px;'/>
 
 Custom widget
 
-<img src="" width='451px;'/>
+<img src="https://raw.githubusercontent.com/Seg-mel/kivy_table_widget/master/images/custom.png" width='600px;'/>
 
 For more information look at example file 
 [example.py](https://github.com/Seg-mel/kivy_table_widget/blob/master/example.py) 
