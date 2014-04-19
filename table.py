@@ -482,9 +482,9 @@ class NewCell(object):
     def __init__(self, **kwargs):
         super(NewCell, self).__init__(**kwargs)
         self.bind(size=self._redraw_widget)
-        self.bind(on_press = self.on_press_button)
+        self.bind(on_press = self._on_press_button)
         try:
-            self.bind(focus=self.on_press_button)
+            self.bind(focus=self._on_press_button)
         except: pass
         self._color_widget = [1, 1, 1, 1]
         self._color_click = [.3, .3, .3, 1]
@@ -510,7 +510,7 @@ class NewCell(object):
     def color_click(self, value):
         self._color_click = value
 
-    def on_press_button(self, *args):
+    def _on_press_button(self, *args):
         """ On press method for current object """
         self.parent.current_cell = args[0]
         self.state = 'normal'
@@ -537,9 +537,9 @@ class NewLabel(Button):
     """Label element for label panel"""
     def __init__(self, **kwargs):
         super(NewLabel, self).__init__(**kwargs)
-        self.bind(on_press = self.on_press_button)
+        self.bind(on_press = self._on_press_button)
 
-    def on_press_button(self, touch=None):
+    def _on_press_button(self, touch=None):
         """ On press method for current object """
         # Disable a click
         self.state = 'normal'
@@ -553,7 +553,7 @@ class NullLabel(Button):
     def __init__(self, **kwargs):
         super(NullLabel, self).__init__(**kwargs)
         self.bind(size=self._redraw_widget)
-        self.bind(on_press = self.on_press_button)
+        self.bind(on_press = self._on_press_button)
         self._color = [.2, .2, .2, 1]
 
     @property
@@ -565,7 +565,7 @@ class NullLabel(Button):
         self._color = color
         self._redraw_widget()
 
-    def on_press_button(self, touch=None):
+    def _on_press_button(self, touch=None):
         """ On press method for current object """
         # Disable a click
         self.state = 'normal'
@@ -585,9 +585,9 @@ class NewNumberLabel(Button):
 
     def __init__(self, **kwargs):
         super(NewNumberLabel, self).__init__(**kwargs)
-        self.bind(on_press = self.on_press_button)
+        self.bind(on_press = self._on_press_button)
 
-    def on_press_button(self, touch=None):
+    def _on_press_button(self, touch=None):
         """ On press method for current object """
         self.state = 'normal'
         print 'pressed on number label'
