@@ -12,10 +12,11 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.button import Button
 from kivy.uix.label import Label
+from os.path import join, dirname, abspath
 
 
 
-Builder.load_file('./table.kv')
+Builder.load_file(join(dirname(abspath(__file__)),'./table.kv'))
 
 
 
