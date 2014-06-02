@@ -24,14 +24,14 @@ class MainScreen(BoxLayout):
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
         self.my_table = Table()
         self.my_table.cols = 2
-        self.my_table.add_button_row('123','456')
+        self.my_table.add_button_row('123', '456')
         for i in range(110):
-            self.my_table.add_row([Button, {'text':'button%s'%i,
-                                            'color_widget': [0,0,0.5,1],
-                                            'color_click': [0,1,0,1]
+            self.my_table.add_row([Button, {'text': 'button%s' % i,
+                                            'color_widget': [0, 0, 0.5, 1],
+                                            'color_click': [0, 1, 0, 1]
                                             }], 
-                                  [TextInput, {'text':'textinput%s'%i,
-                                               'color_click': [1,0,.5,1]
+                                  [TextInput, {'text': 'textinput%s' % i,
+                                               'color_click': [1, 0, .5, 1]
                                                }])
         self.my_table.label_panel.visible = False
         self.my_table.label_panel.height_widget = 50

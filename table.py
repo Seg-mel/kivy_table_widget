@@ -16,16 +16,16 @@ from os.path import join, dirname, abspath
 
 
 
-Builder.load_file(join(dirname(abspath(__file__)),'./table.kv'))
+Builder.load_file(join(dirname(abspath(__file__)), 'table.kv'))
 
 
 
 class Table(BoxLayout):
     """My table widget"""
 
-    def __init__(self):
-        super(Table, self).__init__()
-        self._cols = 0
+    def __init__(self, **kwargs):
+        super(Table, self).__init__(**kwargs)
+        self._cols = 2
         self._chosen_row = 0
         # Getting the LabelPanel object for working with it
         self._label_panel = self.children[1]
@@ -169,7 +169,7 @@ class ScrollViewTable(ScrollView):
         super(ScrollViewTable, self).__init__(**kwargs)
         self.bind(size=self._redraw_widget)
         self._color = [.2, .2, .2, 1]
-        # Start scroll_y pisition
+        # Start scroll_y position
         self.scroll_y = 1
 
     @property
